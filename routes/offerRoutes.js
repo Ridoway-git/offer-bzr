@@ -9,6 +9,7 @@ const {
   toggleOfferFeatured,
   toggleOfferStatus,
   getFeaturedOffers,
+  getFavorites,
   getFavoriteStatus,
   toggleFavorite
 } = require('../controllers/offerController');
@@ -111,6 +112,7 @@ router.put('/:id', offerValidation, updateOffer);
 router.delete('/:id', deleteOffer);
 router.patch('/:id/toggle-featured', toggleOfferFeatured);
 router.patch('/:id/toggle-status', toggleOfferStatus);
+router.get('/favorites', getFavorites);
 router.get('/:id/favorite-status', getFavoriteStatus);
 router.post('/:id/favorite', toggleFavorite);
 
