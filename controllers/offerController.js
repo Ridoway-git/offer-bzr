@@ -326,6 +326,24 @@ const getFeaturedOffers = async (req, res) => {
   }
 };
 
+// Get user's favorite offers
+const getFavorites = async (req, res) => {
+  try {
+    // For now, return empty array as we don't have user authentication implemented
+    // In a real app, you would fetch user's favorite offers from database
+    res.json({
+      success: true,
+      favorites: []
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching favorites',
+      error: error.message
+    });
+  }
+};
+
 // Get favorite status for an offer
 const getFavoriteStatus = async (req, res) => {
   try {
@@ -372,6 +390,7 @@ module.exports = {
   toggleOfferFeatured,
   toggleOfferStatus,
   getFeaturedOffers,
+  getFavorites,
   getFavoriteStatus,
   toggleFavorite
 };
