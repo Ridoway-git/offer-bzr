@@ -10,6 +10,7 @@ const {
   toggleOfferStatus,
   getFeaturedOffers,
   getFavorites,
+  getCategories,
   getFavoriteStatus,
   toggleFavorite
 } = require('../controllers/offerController');
@@ -107,6 +108,7 @@ const offerValidation = [
 router.get('/', getAllOffers);
 router.get('/featured', getFeaturedOffers);
 router.get('/favorites', getFavorites);
+router.get('/categories', getCategories);
 router.get('/:id', getOfferById);
 router.post('/', offerValidation, createOffer);
 router.put('/:id', offerValidation, updateOffer);
