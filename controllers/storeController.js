@@ -1,4 +1,5 @@
 const Store = require('../models/Store');
+const Offer = require('../models/Offer');
 const { validationResult } = require('express-validator');
 
 // Get all stores
@@ -24,11 +25,32 @@ const getAllStores = async (req, res) => {
       .skip((page - 1) * limit)
       .exec();
 
+    // Add offers count to each store
+    const storesWithOffers = await Promise.all(
+      stores.map(async (store) => {
+        const offersCount = await Offer.countDocuments({ 
+          store: store._id, 
+          isActive: true 
+        });
+        const activeOffersCount = await Offer.countDocuments({ 
+          store: store._id, 
+          isActive: true,
+          expiryDate: { $gt: new Date() }
+        });
+        
+        return {
+          ...store.toObject(),
+          totalOffers: offersCount,
+          activeOffers: activeOffersCount
+        };
+      })
+    );
+
     const total = await Store.countDocuments(query);
 
     res.json({
       success: true,
-      data: stores,
+      data: storesWithOffers,
       pagination: {
         currentPage: parseInt(page),
         totalPages: Math.ceil(total / limit),
