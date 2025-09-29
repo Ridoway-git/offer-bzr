@@ -326,6 +326,23 @@ const getFeaturedOffers = async (req, res) => {
   }
 };
 
+// Get all categories
+const getCategories = async (req, res) => {
+  try {
+    const categories = await Offer.distinct('category', { isActive: true });
+    res.json({
+      success: true,
+      categories: categories
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching categories',
+      error: error.message
+    });
+  }
+};
+
 // Get user's favorite offers
 const getFavorites = async (req, res) => {
   try {
@@ -396,6 +413,7 @@ module.exports = {
   toggleOfferStatus,
   getFeaturedOffers,
   getFavorites,
+  getCategories,
   getFavoriteStatus,
   toggleFavorite
 };
