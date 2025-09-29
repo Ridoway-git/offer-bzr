@@ -347,6 +347,7 @@ document.getElementById('offerForm').addEventListener('submit', async function(e
         offerCode: formData.get('offerCode'),
         description: formData.get('description'),
         imageUrl: formData.get('imageUrl') && formData.get('imageUrl').trim() !== '' ? formData.get('imageUrl') : undefined,
+        productUrl: formData.get('productUrl') && formData.get('productUrl').trim() !== '' ? formData.get('productUrl') : undefined,
         discount: parseInt(formData.get('discount')),
         discountType: formData.get('discountType'),
         store: formData.get('store'),
@@ -549,6 +550,7 @@ function editOffer(offerId) {
     document.getElementById('offerCode').value = offer.offerCode;
     document.getElementById('offerDescription').value = offer.description;
     document.getElementById('offerImage').value = offer.imageUrl || '';
+    document.getElementById('offerProductUrl').value = offer.productUrl || '';
     document.getElementById('offerDiscount').value = offer.discount;
     document.getElementById('offerDiscountType').value = offer.discountType;
     document.getElementById('offerStore').value = offer.store._id;
