@@ -30,6 +30,16 @@ const offerSchema = new mongoose.Schema({
       message: 'Image URL must be a valid URL or upload path'
     }
   },
+  productUrl: {
+    type: String,
+    trim: true,
+    validate: {
+      validator: function(v) {
+        return !v || /^https?:\/\/.+/.test(v);
+      },
+      message: 'Product URL must be a valid URL'
+    }
+  },
   discount: {
     type: Number,
     required: [true, 'Discount amount is required'],
