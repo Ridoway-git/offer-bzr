@@ -8,7 +8,9 @@ const {
   deleteOffer,
   toggleOfferFeatured,
   toggleOfferStatus,
-  getFeaturedOffers
+  getFeaturedOffers,
+  getFavoriteStatus,
+  toggleFavorite
 } = require('../controllers/offerController');
 
 const router = express.Router();
@@ -109,5 +111,7 @@ router.put('/:id', offerValidation, updateOffer);
 router.delete('/:id', deleteOffer);
 router.patch('/:id/toggle-featured', toggleOfferFeatured);
 router.patch('/:id/toggle-status', toggleOfferStatus);
+router.get('/:id/favorite-status', getFavoriteStatus);
+router.post('/:id/favorite', toggleFavorite);
 
 module.exports = router;

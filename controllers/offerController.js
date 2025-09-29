@@ -326,6 +326,43 @@ const getFeaturedOffers = async (req, res) => {
   }
 };
 
+// Get favorite status for an offer
+const getFavoriteStatus = async (req, res) => {
+  try {
+    // For now, return false as we don't have user authentication implemented
+    // In a real app, you would check the user's favorites
+    res.json({
+      success: true,
+      isFavorite: false
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error checking favorite status',
+      error: error.message
+    });
+  }
+};
+
+// Toggle favorite status for an offer
+const toggleFavorite = async (req, res) => {
+  try {
+    // For now, return a mock response
+    // In a real app, you would add/remove from user's favorites
+    res.json({
+      success: true,
+      isFavorite: true,
+      message: 'Favorite status updated'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error toggling favorite',
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   getAllOffers,
   getOfferById,
@@ -334,5 +371,7 @@ module.exports = {
   deleteOffer,
   toggleOfferFeatured,
   toggleOfferStatus,
-  getFeaturedOffers
+  getFeaturedOffers,
+  getFavoriteStatus,
+  toggleFavorite
 };
