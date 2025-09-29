@@ -329,11 +329,16 @@ const getFeaturedOffers = async (req, res) => {
 // Get user's favorite offers
 const getFavorites = async (req, res) => {
   try {
-    // For now, return empty array as we don't have user authentication implemented
+    // For now, return all offers as favorites (mock implementation)
     // In a real app, you would fetch user's favorite offers from database
+    const offers = await Offer.find({ isActive: true })
+      .populate('store', 'name category logoUrl')
+      .sort({ createdAt: -1 })
+      .limit(10);
+
     res.json({
       success: true,
-      favorites: []
+      favorites: offers
     });
   } catch (error) {
     res.status(500).json({
@@ -370,7 +375,7 @@ const toggleFavorite = async (req, res) => {
     res.json({
       success: true,
       isFavorite: true,
-      message: 'Favorite status updated'
+      message: 'Added to favorites'
     });
   } catch (error) {
     res.status(500).json({
