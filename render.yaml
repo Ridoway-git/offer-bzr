@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: offer-bazar-api
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        value: mongodb+srv://loopsridoway:jASEqeDKhwO2D21H@cluster0.zfv1kvp.mongodb.net/offer_bazar_prod?retryWrites=true&w=majority&appName=Cluster0
+      - key: PORT
+        value: 10000

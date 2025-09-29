@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merchant Dashboard - Offer Bazar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+
+        .merchant-dashboard {
+            min-height: 100vh;
+            background: #f8fafc;
+        }
+
+        .merchant-header {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .merchant-nav {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 64px;
+        }
+
+        .merchant-logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .merchant-logo i {
+            color: #3b82f6;
+        }
+
+        .merchant-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #64748b;
+        }
+
+        .merchant-avatar {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            color: white;
+        }
+
+        .merchant-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        .merchant-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            font-size: 20px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .merchant-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .action-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #10b981, #059669);
+        }
+
+        .action-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-color: #3b82f6;
+        }
+
+        .action-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 24px;
+            color: white;
+        }
+
+        .action-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+
+        .action-desc {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .merchant-section {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title i {
+            color: #3b82f6;
+        }
+
+        .merchant-form {
+            display: grid;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            color: #374151;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: #1e293b;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #9ca3af;
+        }
+
+        .btn-merchant {
+            background: #f8fafc;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 12px 20px;
+            color: #374151;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .btn-merchant:hover {
+            background: #f1f5f9;
+            border-color: #94a3b8;
+        }
+
+        .btn-merchant.primary {
+            background: #3b82f6;
+            border-color: #3b82f6;
+            color: white;
+        }
+
+        .btn-merchant.primary:hover {
+            background: #2563eb;
+            border-color: #2563eb;
+        }
+
+        .merchant-list {
+            display: grid;
+            gap: 16px;
+        }
+
+        .merchant-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .merchant-item:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .item-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .item-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-approved {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+
+        .item-details {
+            font-size: 14px;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #64748b;
+            padding: 40px;
+            font-style: italic;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px dashed #d1d5db;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #1e293b;
+            color: white;
+            padding: 16px 20px;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            background: #059669;
+        }
+
+        .toast.error {
+            background: #dc2626;
+        }
+
+        @media (max-width: 768px) {
+            .merchant-content {
+                padding: 20px 16px;
+            }
+
+            .merchant-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .merchant-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .merchant-nav {
+                padding: 0 16px;
+            }
+
+            .merchant-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body class="merchant-dashboard">
+    <div class="merchant-header">
+        <div class="merchant-nav">
+            <div class="merchant-logo">
+                <i class="fas fa-store"></i> Merchant Dashboard
+            </div>
+            <div class="merchant-user">
+                <div class="merchant-avatar" id="merchantAvatar">M</div>
+                <div>
+                    <div id="merchantName">Merchant Name</div>
+                    <div style="font-size: 12px; opacity: 0.8;">Merchant Account</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="merchant-content">
+        <div class="merchant-stats">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
+                    <i class="fas fa-store"></i>
+                </div>
+                <div class="stat-value" id="totalStores">0</div>
+                <div class="stat-label">Total Stores</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">
+                    <i class="fas fa-tags"></i>
+                </div>
+                <div class="stat-value" id="totalOffers">0</div>
+                <div class="stat-label">Total Offers</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(251, 191, 36, 0.1); color: #f59e0b;">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-value" id="pendingItems">0</div>
+                <div class="stat-label">Pending Approval</div>
+            </div>
+        </div>
+
+        <div class="merchant-actions">
+            <div class="action-card" onclick="showAddStore()">
+                <div class="action-icon">
+                    <i class="fas fa-plus"></i>
+                </div>
+                <div class="action-title">Add New Store</div>
+                <div class="action-desc">Create a new store for your business</div>
+            </div>
+            <div class="action-card" onclick="showAddOffer()">
+                <div class="action-icon">
+                    <i class="fas fa-tag"></i>
+                </div>
+                <div class="action-title">Add New Offer</div>
+                <div class="action-desc">Create a new offer for your store</div>
+            </div>
+        </div>
+
+        <div class="merchant-section" id="addStoreSection" style="display: none;">
+            <div class="section-title">
+                <i class="fas fa-store"></i> Add New Store
+            </div>
+            <form id="storeForm" class="merchant-form">
+                <div class="form-group">
+                    <label for="storeName">Store Name</label>
+                    <input type="text" id="storeName" name="name" placeholder="Enter store name" required>
+                </div>
+                <div class="form-group">
+                    <label for="storeCategory">Category</label>
+                    <select id="storeCategory" name="category" required>
+                        <option value="">Select category</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Fashion">Fashion</option>
+                        <option value="Food & Beverage">Food & Beverage</option>
+                        <option value="Health & Beauty">Health & Beauty</option>
+                        <option value="Home & Garden">Home & Garden</option>
+                        <option value="Sports & Outdoors">Sports & Outdoors</option>
+                        <option value="Books & Media">Books & Media</option>
+                        <option value="Automotive">Automotive</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="storeDescription">Description</label>
+                    <textarea id="storeDescription" name="description" rows="3" placeholder="Describe your store" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="storeWebsite">Website URL</label>
+                    <input type="url" id="storeWebsite" name="websiteUrl" placeholder="https://example.com">
+                </div>
+                <div class="form-group">
+                    <label for="storeEmail">Contact Email</label>
+                    <input type="email" id="storeEmail" name="contactEmail" placeholder="contact@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="storeLogo">Logo URL</label>
+                    <input type="url" id="storeLogo" name="logoUrl" placeholder="https://example.com/logo.png">
+                </div>
+                <div style="display: flex; gap: 12px;">
+                    <button type="submit" class="btn-merchant primary">
+                        <i class="fas fa-plus"></i> Create Store
+                    </button>
+                    <button type="button" class="btn-merchant" onclick="hideAddStore()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="merchant-section" id="addOfferSection" style="display: none;">
+            <div class="section-title">
+                <i class="fas fa-tag"></i> Add New Offer
+            </div>
+            <form id="offerForm" class="merchant-form">
+                <div class="form-group">
+                    <label for="offerTitle">Offer Title</label>
+                    <input type="text" id="offerTitle" name="title" placeholder="Enter offer title" required>
+                </div>
+                <div class="form-group">
+                    <label for="offerStore">Select Store</label>
+                    <select id="offerStore" name="store" required>
+                        <option value="">Select store</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="offerDescription">Description</label>
+                    <textarea id="offerDescription" name="description" rows="3" placeholder="Describe your offer" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="offerDiscount">Discount</label>
+                    <input type="text" id="offerDiscount" name="discount" placeholder="e.g., 20% off, $10 off" required>
+                </div>
+                <div class="form-group">
+                    <label for="offerValidUntil">Valid Until</label>
+                    <input type="date" id="offerValidUntil" name="validUntil" required>
+                </div>
+                <div class="form-group">
+                    <label for="offerImage">Image URL</label>
+                    <input type="url" id="offerImage" name="imageUrl" placeholder="https://example.com/offer-image.jpg">
+                </div>
+                <div style="display: flex; gap: 12px;">
+                    <button type="submit" class="btn-merchant primary">
+                        <i class="fas fa-plus"></i> Create Offer
+                    </button>
+                    <button type="button" class="btn-merchant" onclick="hideAddOffer()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="merchant-section">
+            <div class="section-title">
+                <i class="fas fa-list"></i> My Stores
+            </div>
+            <div class="merchant-list" id="myStoresList">
+                <div class="empty-state">
+                    Loading stores...
+                </div>
+            </div>
+        </div>
+
+        <div class="merchant-section">
+            <div class="section-title">
+                <i class="fas fa-tags"></i> My Offers
+            </div>
+            <div class="merchant-list" id="myOffersList">
+                <div class="empty-state">
+                    Loading offers...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="merchant-script.js"></script>
+</body>
+</html>
