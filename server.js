@@ -14,6 +14,7 @@ if (process.env.NODE_ENV !== 'production') {
 const storeRoutes = require('./routes/storeRoutes');
 const offerRoutes = require('./routes/offerRoutes');
 const merchantRoutes = require('./routes/merchantRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 
@@ -101,6 +102,7 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
 app.use('/api/stores', storeRoutes);
 app.use('/api/offers', offerRoutes);
 app.use('/api/merchants', merchantRoutes);
+app.use('/api/auth', authRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
