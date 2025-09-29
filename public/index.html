@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offer Bazar - Admin Panel</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1><i class="fas fa-store"></i> Offer Bazar Admin</h1>
+            <nav class="nav">
+                <button class="nav-btn active" onclick="showSection('dashboard')">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </button>
+                <button class="nav-btn" onclick="showSection('stores')">
+                    <i class="fas fa-store"></i> Stores
+                </button>
+                <button class="nav-btn" onclick="showSection('offers')">
+                    <i class="fas fa-tags"></i> Offers
+                </button>
+                <button class="nav-btn" onclick="showSection('merchants')">
+                    <i class="fas fa-users"></i> Merchants
+                </button>
+                <button class="nav-btn" onclick="showSection('approvals')">
+                    <i class="fas fa-check-circle"></i> Approvals
+                </button>
+            </nav>
+        </header>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="section active">
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h3><i class="fas fa-store"></i> Total Stores</h3>
+                    <div class="stat-number" id="totalStores">-</div>
+                </div>
+                <div class="card">
+                    <h3><i class="fas fa-tags"></i> Total Offers</h3>
+                    <div class="stat-number" id="totalOffers">-</div>
+                </div>
+                <div class="card">
+                    <h3><i class="fas fa-star"></i> Featured Offers</h3>
+                    <div class="stat-number" id="featuredOffers">-</div>
+                </div>
+                <div class="card">
+                    <h3><i class="fas fa-check-circle"></i> Active Stores</h3>
+                    <div class="stat-number" id="activeStores">-</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stores Section -->
+        <section id="stores" class="section">
+            <div class="section-header">
+                <h2><i class="fas fa-store"></i> Store Management</h2>
+                <div class="header-actions">
+                    <div class="search-box">
+                        <input type="text" id="storeSearch" placeholder="Search stores..." onkeyup="searchStores()">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <button class="btn btn-primary" onclick="showCreateStoreForm()">
+                        <i class="fas fa-plus"></i> Create New Store
+                    </button>
+                </div>
+            </div>
+
+            <!-- Create Store Form -->
+            <div id="createStoreForm" class="form-container" style="display: none;">
+                <h3>Create New Store</h3>
+                <form id="storeForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="storeName">Store Name *</label>
+                            <input type="text" id="storeName" name="name" placeholder="e.g., Amazon" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="storeCategory">Category *</label>
+                            <input type="text" id="storeCategory" name="category" placeholder="e.g., Electronics, Fashion, Food, etc." required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="storeDescription">Description *</label>
+                        <textarea id="storeDescription" name="description" placeholder="Describe the store..." rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="storeWebsite">Website URL</label>
+                            <input type="url" id="storeWebsite" name="websiteUrl" placeholder="https://example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="storeEmail">Contact Email</label>
+                            <input type="email" id="storeEmail" name="contactEmail" placeholder="contact@example.com">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="storeLogo">Logo URL</label>
+                        <input type="url" id="storeLogo" name="logoUrl" placeholder="https://example.com/logo.png">
+                        <small>Enter the logo URL for this store</small>
+                    </div>
+                    
+                    <div class="form-group checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="storeActive" name="isActive" checked>
+                            <span class="checkmark"></span>
+                            Store is active
+                        </label>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="hideCreateStoreForm()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Create Store</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Stores List -->
+            <div class="stores-list" id="storesList">
+                <div class="loading">Loading stores...</div>
+            </div>
+        </section>
+
+        <!-- Offers Section -->
+        <section id="offers" class="section">
+            <div class="section-header">
+                <h2><i class="fas fa-tags"></i> Offer Management</h2>
+                <div class="header-actions">
+                    <div class="search-box">
+                        <input type="text" id="offerSearch" placeholder="Search offers..." onkeyup="searchOffers()">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <button class="btn btn-primary" onclick="showCreateOfferForm()">
+                        <i class="fas fa-plus"></i> Create New Offer
+                    </button>
+                </div>
+            </div>
+
+            <!-- Create Offer Form -->
+            <div id="createOfferForm" class="form-container" style="display: none;">
+                <h3>Create New Offer</h3>
+                <form id="offerForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="offerTitle">Title *</label>
+                            <input type="text" id="offerTitle" name="title" placeholder="e.g., Summer Sale 2025" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="offerCode">Offer Code *</label>
+                            <input type="text" id="offerCode" name="offerCode" placeholder="e.g., SUMMER50" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="offerDescription">Description *</label>
+                        <textarea id="offerDescription" name="description" placeholder="Describe the offer details..." rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="offerImage">Offer Image URL</label>
+                        <input type="url" id="offerImage" name="imageUrl" placeholder="https://example.com/offer-image.jpg">
+                        <small>Enter the image URL for this offer</small>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="offerDiscount">Discount *</label>
+                            <input type="number" id="offerDiscount" name="discount" placeholder="50" min="0" max="100" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="offerDiscountType">Discount Type *</label>
+                            <select id="offerDiscountType" name="discountType" required>
+                                <option value="">Select Type</option>
+                                <option value="Percentage">Percentage (%)</option>
+                                <option value="Fixed">Fixed Amount</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="offerStore">Store *</label>
+                            <select id="offerStore" name="store" required>
+                                <option value="">Select a store</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="offerCategory">Category *</label>
+                            <input type="text" id="offerCategory" name="category" placeholder="e.g., Electronics, Fashion, Food, etc." required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="offerExpiry">Expiry Date & Time *</label>
+                            <input type="datetime-local" id="offerExpiry" name="expiryDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="offerMinPurchase">Min Purchase Amount</label>
+                            <input type="number" id="offerMinPurchase" name="minPurchaseAmount" placeholder="0" min="0">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="offerFeatured" name="isFeatured">
+                            <span class="checkmark"></span>
+                            Feature this offer (show on homepage)
+                        </label>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="hideCreateOfferForm()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Create Offer</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Offers List -->
+            <div class="offers-list" id="offersList">
+                <div class="loading">Loading offers...</div>
+            </div>
+        </section>
+
+        <!-- Merchants Section -->
+        <section id="merchants" class="section">
+            <div class="section-header">
+                <h2><i class="fas fa-users"></i> Merchant Management</h2>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="showCreateMerchantForm()">
+                        <i class="fas fa-plus"></i> Add New Merchant
+                    </button>
+                    <div class="search-box">
+                        <input type="text" id="merchantSearch" placeholder="Search merchants..." onkeyup="searchMerchants()">
+                        <i class="fas fa-search"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Create Merchant Form -->
+            <div id="createMerchantForm" class="form-container" style="display: none;">
+                <div class="form-header">
+                    <h3><i class="fas fa-user-plus"></i> Create New Merchant</h3>
+                    <button class="btn btn-secondary" onclick="hideCreateMerchantForm()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </div>
+                
+                <form id="merchantForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="merchantName">Merchant Name</label>
+                            <input type="text" id="merchantName" name="name" placeholder="Enter merchant name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="merchantEmail">Email</label>
+                            <input type="email" id="merchantEmail" name="email" placeholder="merchant@example.com" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="merchantPhone">Phone</label>
+                            <input type="text" id="merchantPhone" name="phone" placeholder="+1234567890" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="merchantBusinessName">Business Name</label>
+                            <input type="text" id="merchantBusinessName" name="businessName" placeholder="Business name" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="merchantBusinessType">Business Type</label>
+                            <select id="merchantBusinessType" name="businessType" required>
+                                <option value="">Select business type</option>
+                                <option value="Retail">Retail</option>
+                                <option value="Restaurant">Restaurant</option>
+                                <option value="Service">Service</option>
+                                <option value="E-commerce">E-commerce</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="merchantWebsite">Website</label>
+                            <input type="url" id="merchantWebsite" name="website" placeholder="https://example.com">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="merchantAddress">Address</label>
+                        <textarea id="merchantAddress" name="address" rows="3" placeholder="Enter business address" required></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="hideCreateMerchantForm()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Create Merchant</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Merchants List -->
+            <div class="merchants-list" id="merchantsList">
+                <div class="loading">Loading merchants...</div>
+            </div>
+        </section>
+
+        <!-- Approvals Section -->
+        <section id="approvals" class="section">
+            <div class="section-header">
+                <h2><i class="fas fa-check-circle"></i> Pending Approvals</h2>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="loadPendingApprovals()">
+                        <i class="fas fa-sync"></i> Refresh
+                    </button>
+                </div>
+            </div>
+
+            <div class="approval-tabs">
+                <button class="tab-btn active" onclick="showApprovalTab('stores')">
+                    <i class="fas fa-store"></i> Pending Stores
+                    <span class="tab-count" id="storeCount">0</span>
+                </button>
+                <button class="tab-btn" onclick="showApprovalTab('offers')">
+                    <i class="fas fa-tags"></i> Pending Offers
+                    <span class="tab-count" id="offerCount">0</span>
+                </button>
+            </div>
+
+            <div id="pendingStores" class="approval-content">
+                <div class="loading">Loading pending stores...</div>
+            </div>
+
+            <div id="pendingOffers" class="approval-content" style="display: none;">
+                <div class="loading">Loading pending offers...</div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
