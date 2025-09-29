@@ -42,6 +42,14 @@ const offerValidation = [
       return /^(\/uploads\/.+|https?:\/\/.+)/.test(value);
     })
     .withMessage('Image URL must be a valid URL or upload path'),
+  body('productUrl')
+    .optional()
+    .custom((value) => {
+      if (!value || value.trim() === '') return true;
+      
+      return /^https?:\/\/.+/.test(value);
+    })
+    .withMessage('Product URL must be a valid URL'),
   body('discount')
     .notEmpty()
     .withMessage('Discount amount is required')
