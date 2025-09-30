@@ -363,6 +363,8 @@ const createMerchantStore = async (req, res) => {
       data: store
     });
   } catch (error) {
+    console.error('Error creating store:', error);
+    console.error('Store data received:', req.body);
     res.status(500).json({
       success: false,
       message: 'Error creating store',
@@ -507,6 +509,8 @@ const createMerchantOffer = async (req, res) => {
       data: offer
     });
   } catch (error) {
+    console.error('Error creating offer:', error);
+    console.error('Offer data received:', req.body);
     res.status(500).json({
       success: false,
       message: 'Error creating offer',
