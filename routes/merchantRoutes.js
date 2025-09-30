@@ -1,5 +1,6 @@
 const express = require('express');
 const { body } = require('express-validator');
+const authMiddleware = require('../middleware/auth');
 const {
   getAllMerchants,
   getMerchantById,
@@ -9,7 +10,16 @@ const {
   toggleMerchantApproval,
   getPendingApprovals,
   approveStore,
-  approveOffer
+  approveOffer,
+  getMerchantProfile,
+  updateMerchantProfile,
+  createMerchantStore,
+  getMerchantStore,
+  updateMerchantStore,
+  getMerchantOffers,
+  createMerchantOffer,
+  updateMerchantOffer,
+  deleteMerchantOffer
 } = require('../controllers/merchantController');
 
 const router = express.Router();
@@ -54,6 +64,7 @@ const merchantValidation = [
     .trim()
 ];
 
+// Merchant management routes
 router.get('/', getAllMerchants);
 router.get('/pending', getPendingApprovals);
 router.get('/:id', getMerchantById);
@@ -63,5 +74,20 @@ router.delete('/:id', deleteMerchant);
 router.patch('/:id/toggle-approval', toggleMerchantApproval);
 router.patch('/stores/:id/approve', approveStore);
 router.patch('/offers/:id/approve', approveOffer);
+
+// Merchant profile routes (protected)
+router.get('/profile', authMiddleware, getMerchantProfile);
+router.put('/profile', authMiddleware, updateMerchantProfile);
+
+// Merchant store routes (protected)
+router.post('/store', authMiddleware, createMerchantStore);
+router.get('/store', authMiddleware, getMerchantStore);
+router.put('/store', authMiddleware, updateMerchantStore);
+
+// Merchant offers routes (protected)
+router.get('/offers', authMiddleware, getMerchantOffers);
+router.post('/offers', authMiddleware, createMerchantOffer);
+router.put('/offers/:id', authMiddleware, updateMerchantOffer);
+router.delete('/offers/:id', authMiddleware, deleteMerchantOffer);
 
 module.exports = router;

@@ -264,6 +264,326 @@ const approveOffer = async (req, res) => {
   }
 };
 
+// Merchant profile functions
+const getMerchantProfile = async (req, res) => {
+  try {
+    // Get merchant ID from token (you'll need to implement JWT middleware)
+    const merchantId = req.user?.id; // Assuming JWT middleware sets req.user
+    
+    if (!merchantId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Unauthorized'
+      });
+    }
+
+    const merchant = await Merchant.findById(merchantId);
+    
+    if (!merchant) {
+      return res.status(404).json({
+        success: false,
+        message: 'Merchant not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: merchant
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching merchant profile',
+      error: error.message
+    });
+  }
+};
+
+const updateMerchantProfile = async (req, res) => {
+  try {
+    const merchantId = req.user?.id;
+    
+    if (!merchantId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Unauthorized'
+      });
+    }
+
+    const merchant = await Merchant.findByIdAndUpdate(
+      merchantId,
+      req.body,
+      { new: true, runValidators: true }
+    );
+
+    res.json({
+      success: true,
+      message: 'Profile updated successfully',
+      data: merchant
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error updating profile',
+      error: error.message
+    });
+  }
+};
+
+// Merchant store functions
+const createMerchantStore = async (req, res) => {
+  try {
+    const merchantId = req.user?.id;
+    
+    if (!merchantId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Unauthorized'
+      });
+    }
+
+    const storeData = {
+      ...req.body,
+      merchant: merchantId
+    };
+
+    const store = new Store(storeData);
+    await store.save();
+
+    res.status(201).json({
+      success: true,
+      message: 'Store created successfully',
+      data: store
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error creating store',
+      error: error.message
+    });
+  }
+};
+
+const getMerchantStore = async (req, res) => {
+  try {
+    const merchantId = req.user?.id;
+    
+    if (!merchantId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Unauthorized'
+      });
+    }
+
+    const store = await Store.findOne({ merchant: merchantId });
+    
+    if (!store) {
+      return res.status(404).json({
+        success: false,
+        message: 'Store not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: store
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching store',
+      error: error.message
+    });
+  }
+};
+
+const updateMerchantStore = async (req, res) => {
+  try {
+    const merchantId = req.user?.id;
+    
+    if (!merchantId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Unauthorized'
+      });
+    }
+
+    const store = await Store.findOneAndUpdate(
+      { merchant: merchantId },
+      req.body,
+      { new: true, runValidators: true }
+    );
+
+    if (!store) {
+      return res.status(404).json({
+        success: false,
+        message: 'Store not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Store updated successfully',
+      data: store
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error updating store',
+      error: error.message
+    });
+  }
+};
+
+// Merchant offers functions
+const getMerchantOffers = async (req, res) => {
+  try {
+    const merchantId = req.user?.id;
+    
+    if (!merchantId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Unauthorized'
+      });
+    }
+
+    const offers = await Offer.find({ merchant: merchantId })
+      .populate('store')
+      .sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      data: offers
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching offers',
+      error: error.message
+    });
+  }
+};
+
+const createMerchantOffer = async (req, res) => {
+  try {
+    const merchantId = req.user?.id;
+    
+    if (!merchantId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Unauthorized'
+      });
+    }
+
+    // Get merchant's store
+    const store = await Store.findOne({ merchant: merchantId });
+    
+    if (!store) {
+      return res.status(400).json({
+        success: false,
+        message: 'Store not found. Please create a store first.'
+      });
+    }
+
+    const offerData = {
+      ...req.body,
+      merchant: merchantId,
+      store: store._id
+    };
+
+    const offer = new Offer(offerData);
+    await offer.save();
+
+    res.status(201).json({
+      success: true,
+      message: 'Offer created successfully',
+      data: offer
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error creating offer',
+      error: error.message
+    });
+  }
+};
+
+const updateMerchantOffer = async (req, res) => {
+  try {
+    const merchantId = req.user?.id;
+    const offerId = req.params.id;
+    
+    if (!merchantId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Unauthorized'
+      });
+    }
+
+    const offer = await Offer.findOneAndUpdate(
+      { _id: offerId, merchant: merchantId },
+      req.body,
+      { new: true, runValidators: true }
+    );
+
+    if (!offer) {
+      return res.status(404).json({
+        success: false,
+        message: 'Offer not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Offer updated successfully',
+      data: offer
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error updating offer',
+      error: error.message
+    });
+  }
+};
+
+const deleteMerchantOffer = async (req, res) => {
+  try {
+    const merchantId = req.user?.id;
+    const offerId = req.params.id;
+    
+    if (!merchantId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Unauthorized'
+      });
+    }
+
+    const offer = await Offer.findOneAndDelete({
+      _id: offerId,
+      merchant: merchantId
+    });
+
+    if (!offer) {
+      return res.status(404).json({
+        success: false,
+        message: 'Offer not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Offer deleted successfully'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error deleting offer',
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   getAllMerchants,
   getMerchantById,
@@ -273,5 +593,15 @@ module.exports = {
   toggleMerchantApproval,
   getPendingApprovals,
   approveStore,
-  approveOffer
+  approveOffer,
+  // New merchant functions
+  getMerchantProfile,
+  updateMerchantProfile,
+  createMerchantStore,
+  getMerchantStore,
+  updateMerchantStore,
+  getMerchantOffers,
+  createMerchantOffer,
+  updateMerchantOffer,
+  deleteMerchantOffer
 };

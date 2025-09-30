@@ -1,4 +1,6 @@
 const express = require('express');
+const jwt = require('jsonwebtoken');
+const Merchant = require('../models/Merchant');
 const router = express.Router();
 
 // Google OAuth endpoint
@@ -6,27 +8,40 @@ router.post('/google', async (req, res) => {
   try {
     const { uid, email, displayName, photoURL } = req.body;
     
-    // For now, just return success with a mock token
-    // In a real app, you would:
-    // 1. Check if user exists in database
-    // 2. Create user if doesn't exist
-    // 3. Generate JWT token
-    // 4. Return token
-    
     console.log('Google auth request:', { uid, email, displayName, photoURL });
     
-    // Mock response - in production, generate real JWT token
-    const mockToken = `mock_token_${uid}_${Date.now()}`;
+    // Check if merchant exists
+    let merchant = await Merchant.findOne({ email });
+    
+    if (!merchant) {
+      // Create new merchant
+      merchant = new Merchant({
+        name: displayName,
+        email: email,
+        googleId: uid,
+        photoURL: photoURL,
+        isApproved: true, // Auto-approve for now
+        isActive: true
+      });
+      await merchant.save();
+    }
+    
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: merchant._id, email: merchant.email },
+      process.env.JWT_SECRET || 'your-secret-key',
+      { expiresIn: '7d' }
+    );
     
     res.json({
       success: true,
       message: 'Google authentication successful',
-      token: mockToken,
+      token: token,
       user: {
-        uid,
-        email,
-        displayName,
-        photoURL
+        id: merchant._id,
+        name: merchant.name,
+        email: merchant.email,
+        photoURL: merchant.photoURL
       }
     });
     

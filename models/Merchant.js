@@ -20,20 +20,25 @@ const merchantSchema = new mongoose.Schema({
       message: 'Please provide a valid email address'
     }
   },
+  googleId: {
+    type: String,
+    unique: true,
+    sparse: true
+  },
+  photoURL: {
+    type: String
+  },
   phone: {
     type: String,
-    required: [true, 'Phone number is required'],
     trim: true
   },
   businessName: {
     type: String,
-    required: [true, 'Business name is required'],
     trim: true,
     maxlength: [100, 'Business name cannot exceed 100 characters']
   },
   businessType: {
     type: String,
-    required: [true, 'Business type is required'],
     trim: true
   },
   website: {
@@ -48,7 +53,6 @@ const merchantSchema = new mongoose.Schema({
   },
   address: {
     type: String,
-    required: [true, 'Address is required'],
     trim: true
   },
   isApproved: {
