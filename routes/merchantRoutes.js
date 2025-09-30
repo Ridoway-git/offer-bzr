@@ -101,9 +101,9 @@ router.get('/profile', authMiddleware, getMerchantProfile);
 router.put('/profile', authMiddleware, updateMerchantProfile);
 
 // Merchant store routes (protected) - MUST come before /:id route
-router.post('/store', authMiddleware, createMerchantStore);
+router.post('/store', authMiddleware, upload.none(), createMerchantStore);
 router.get('/store', authMiddleware, getMerchantStore);
-router.put('/store', authMiddleware, updateMerchantStore);
+router.put('/store', authMiddleware, upload.none(), updateMerchantStore);
 router.delete('/store', authMiddleware, deleteMerchantStore);
 
 // Merchant offers routes (protected) - MUST come before /:id route
