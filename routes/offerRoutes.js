@@ -64,8 +64,8 @@ const offerValidation = [
   body('discountType')
     .notEmpty()
     .withMessage('Discount type is required')
-    .isIn(['Percentage', 'Fixed'])
-    .withMessage('Discount type must be either Percentage or Fixed'),
+    .isIn(['percentage', 'fixed', 'buy_x_get_y', 'free_shipping'])
+    .withMessage('Discount type must be one of: percentage, fixed, buy_x_get_y, free_shipping'),
   body('store')
     .notEmpty()
     .withMessage('Store is required')
