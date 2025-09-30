@@ -103,6 +103,7 @@ router.put('/profile', authMiddleware, updateMerchantProfile);
 router.post('/store', authMiddleware, createMerchantStore);
 router.get('/store', authMiddleware, getMerchantStore);
 router.put('/store', authMiddleware, updateMerchantStore);
+router.delete('/store', authMiddleware, deleteMerchantStore);
 
 // Merchant offers routes (protected) - MUST come before /:id route
 router.get('/offers', authMiddleware, getMerchantOffers);

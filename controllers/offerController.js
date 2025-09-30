@@ -151,9 +151,12 @@ const createOffer = async (req, res) => {
 // Update offer
 const updateOffer = async (req, res) => {
   try {
+    console.log('Update offer request:', req.params.id, req.body);
+    
     // Check for validation errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.error('Validation errors:', errors.array());
       return res.status(400).json({
         success: false,
         message: 'Validation failed',
@@ -205,6 +208,8 @@ const updateOffer = async (req, res) => {
       data: offer
     });
   } catch (error) {
+    console.error('Error updating offer:', error);
+    console.error('Request data:', req.body);
     res.status(500).json({
       success: false,
       message: 'Error updating offer',

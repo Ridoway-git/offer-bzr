@@ -595,6 +595,40 @@ const deleteMerchantOffer = async (req, res) => {
   }
 };
 
+const deleteMerchantStore = async (req, res) => {
+  try {
+    const merchantId = req.user?.id;
+    
+    if (!merchantId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Unauthorized'
+      });
+    }
+
+    const store = await Store.findOneAndDelete({ merchant: merchantId });
+
+    if (!store) {
+      return res.status(404).json({
+        success: false,
+        message: 'Store not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Store deleted successfully'
+    });
+  } catch (error) {
+    console.error('Error deleting store:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error deleting store',
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   getAllMerchants,
   getMerchantById,
@@ -611,6 +645,7 @@ module.exports = {
   createMerchantStore,
   getMerchantStore,
   updateMerchantStore,
+  deleteMerchantStore,
   getMerchantOffers,
   createMerchantOffer,
   updateMerchantOffer,
