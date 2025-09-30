@@ -87,6 +87,32 @@ async function sendNotificationToMerchant(merchantId) {
     }
 }
 
+// Toggle merchant active/inactive status
+async function toggleMerchantStatus(merchantId, currentStatus) {
+    try {
+        const newStatus = !currentStatus;
+        const response = await fetch(`${API_BASE_URL}/merchants/${merchantId}/toggle-status`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ isActive: newStatus })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showToast(`Merchant ${newStatus ? 'activated' : 'deactivated'} successfully!`, 'success');
+            loadMerchants();
+        } else {
+            showToast(data.message || 'Error updating merchant status', 'error');
+        }
+    } catch (error) {
+        console.error('Error updating merchant status:', error);
+        showToast('Error updating merchant status', 'error');
+    }
+}
+
 // Enhanced merchant card HTML with control buttons
 function createMerchantCardHTML(merchant) {
     return `

@@ -732,6 +732,14 @@ function displayMerchants() {
                     <i class="fas fa-${merchant.isApproved ? 'times' : 'check'}"></i>
                     ${merchant.isApproved ? 'Disapprove' : 'Approve'}
                 </button>
+                <button class="btn ${merchant.isActive ? 'btn-warning' : 'btn-success'}" 
+                        onclick="toggleMerchantStatus('${merchant._id}', ${merchant.isActive})">
+                    <i class="fas fa-${merchant.isActive ? 'pause' : 'play'}"></i>
+                    ${merchant.isActive ? 'Deactivate' : 'Activate'}
+                </button>
+                <button class="btn btn-primary" onclick="sendNotificationToMerchant('${merchant._id}')">
+                    <i class="fas fa-bell"></i> Notify
+                </button>
                 <button class="btn btn-danger" onclick="deleteMerchant('${merchant._id}')">
                     <i class="fas fa-trash"></i> Delete
                 </button>
@@ -925,6 +933,14 @@ async function searchMerchants() {
                         onclick="toggleMerchantApproval('${merchant._id}', ${merchant.isApproved})">
                     <i class="fas fa-${merchant.isApproved ? 'times' : 'check'}"></i>
                     ${merchant.isApproved ? 'Disapprove' : 'Approve'}
+                </button>
+                <button class="btn ${merchant.isActive ? 'btn-warning' : 'btn-success'}" 
+                        onclick="toggleMerchantStatus('${merchant._id}', ${merchant.isActive})">
+                    <i class="fas fa-${merchant.isActive ? 'pause' : 'play'}"></i>
+                    ${merchant.isActive ? 'Deactivate' : 'Activate'}
+                </button>
+                <button class="btn btn-primary" onclick="sendNotificationToMerchant('${merchant._id}')">
+                    <i class="fas fa-bell"></i> Notify
                 </button>
                 <button class="btn btn-danger" onclick="deleteMerchant('${merchant._id}')">
                     <i class="fas fa-trash"></i> Delete
