@@ -50,8 +50,8 @@ const offerSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Discount type is required'],
     enum: {
-      values: ['Percentage', 'Fixed'],
-      message: 'Discount type must be either Percentage or Fixed'
+      values: ['percentage', 'fixed', 'buy_x_get_y', 'free_shipping'],
+      message: 'Discount type must be one of: percentage, fixed, buy_x_get_y, free_shipping'
     }
   },
   store: {
