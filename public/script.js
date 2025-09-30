@@ -386,9 +386,11 @@ document.getElementById('offerForm').addEventListener('submit', async function(e
         } else {
             // Show detailed validation errors
             if (data.errors && data.errors.length > 0) {
+                console.log('Admin offer validation errors:', data.errors);
                 const errorMessages = data.errors.map(err => err.msg).join(', ');
                 showToast(`Validation Error: ${errorMessages}`, 'error');
             } else {
+                console.log('Admin offer error:', data.message);
                 showToast(data.message || `Error ${isEdit ? 'updating' : 'creating'} offer`, 'error');
             }
         }
