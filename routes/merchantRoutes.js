@@ -18,6 +18,7 @@ const {
   createMerchantStore,
   getMerchantStore,
   updateMerchantStore,
+  deleteMerchantStore,
   getMerchantOffers,
   createMerchantOffer,
   updateMerchantOffer,
