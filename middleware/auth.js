@@ -22,9 +22,10 @@ const authMiddleware = async (req, res, next) => {
       });
     }
 
-    req.user = { id: merchant._id, email: merchant.email };
+    req.user = { id: merchant._id.toString(), email: merchant.email };
     next();
   } catch (error) {
+    console.error('Auth middleware error:', error);
     res.status(401).json({
       success: false,
       message: 'Invalid token'
