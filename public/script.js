@@ -721,9 +721,6 @@ function displayMerchants() {
             </div>
             
             <div class="merchant-actions">
-                <button class="btn btn-info" onclick="openMerchantDashboard('${merchant._id}')">
-                    <i class="fas fa-external-link-alt"></i> Go to Dashboard
-                </button>
                 <button class="btn btn-secondary" onclick="editMerchant('${merchant._id}')">
                     <i class="fas fa-edit"></i> Edit
                 </button>
@@ -923,9 +920,6 @@ async function searchMerchants() {
             </div>
             
             <div class="merchant-actions">
-                <button class="btn btn-info" onclick="openMerchantDashboard('${merchant._id}')">
-                    <i class="fas fa-external-link-alt"></i> Go to Dashboard
-                </button>
                 <button class="btn btn-secondary" onclick="editMerchant('${merchant._id}')">
                     <i class="fas fa-edit"></i> Edit
                 </button>
@@ -1034,10 +1028,6 @@ async function deleteMerchant(merchantId) {
     }
 }
 
-function showCreateMerchantForm() {
-    document.getElementById('createMerchantForm').style.display = 'block';
-}
-
 function hideCreateMerchantForm() {
     document.getElementById('createMerchantForm').style.display = 'none';
     document.getElementById('merchantForm').reset();
@@ -1079,10 +1069,6 @@ document.getElementById('merchantForm').addEventListener('submit', async functio
     }
 });
 
-function openMerchantDashboard(merchantId) {
-    const dashboardUrl = `merchant.html?merchantId=${merchantId}`;
-    window.open(dashboardUrl, '_blank');
-}
 
 // Merchant Control Functions
 async function toggleMerchantStatus(merchantId, currentStatus) {

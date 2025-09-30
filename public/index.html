@@ -25,9 +25,6 @@
                 <button class="nav-btn" onclick="showSection('merchants')">
                     <i class="fas fa-users"></i> Merchants
                 </button>
-                <button class="nav-btn" onclick="showSection('approvals')">
-                    <i class="fas fa-check-circle"></i> Approvals
-                </button>
             </nav>
         </header>
 
@@ -240,9 +237,6 @@
             <div class="section-header">
                 <h2><i class="fas fa-users"></i> Merchant Management</h2>
                 <div class="header-actions">
-                    <button class="btn btn-primary" onclick="showCreateMerchantForm()">
-                        <i class="fas fa-plus"></i> Add New Merchant
-                    </button>
                     <div class="search-box">
                         <input type="text" id="merchantSearch" placeholder="Search merchants..." onkeyup="searchMerchants()">
                         <i class="fas fa-search"></i>
@@ -318,36 +312,6 @@
             </div>
         </section>
 
-        <!-- Approvals Section -->
-        <section id="approvals" class="section">
-            <div class="section-header">
-                <h2><i class="fas fa-check-circle"></i> Pending Approvals</h2>
-                <div class="header-actions">
-                    <button class="btn btn-primary" onclick="loadPendingApprovals()">
-                        <i class="fas fa-sync"></i> Refresh
-                    </button>
-                </div>
-            </div>
-
-            <div class="approval-tabs">
-                <button class="tab-btn active" onclick="showApprovalTab('stores')">
-                    <i class="fas fa-store"></i> Pending Stores
-                    <span class="tab-count" id="storeCount">0</span>
-                </button>
-                <button class="tab-btn" onclick="showApprovalTab('offers')">
-                    <i class="fas fa-tags"></i> Pending Offers
-                    <span class="tab-count" id="offerCount">0</span>
-                </button>
-            </div>
-
-            <div id="pendingStores" class="approval-content">
-                <div class="loading">Loading pending stores...</div>
-            </div>
-
-            <div id="pendingOffers" class="approval-content" style="display: none;">
-                <div class="loading">Loading pending offers...</div>
-            </div>
-        </section>
     </div>
 
     <!-- Toast Notification -->
