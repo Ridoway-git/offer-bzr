@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', function() {
     loadStores();
     loadOffers();
     loadMerchants();
-    loadPendingApprovals();
 });
 
 // Navigation functions
@@ -745,25 +744,6 @@ function displayMerchants() {
     `).join('');
 }
 
-async function loadPendingApprovals() {
-    try {
-        const response = await fetch(`${API_BASE_URL}/merchants/pending`);
-        const data = await response.json();
-        
-        if (data.success) {
-            pendingStores = data.data.pendingStores;
-            pendingOffers = data.data.pendingOffers;
-            displayPendingStores();
-            displayPendingOffers();
-            updateApprovalCounts();
-        } else {
-            showToast('Error loading pending approvals', 'error');
-        }
-    } catch (error) {
-        console.error('Error loading pending approvals:', error);
-        showToast('Error loading pending approvals', 'error');
-    }
-}
 
 function displayPendingStores() {
     const pendingStoresElement = document.getElementById('pendingStores');
@@ -974,7 +954,6 @@ async function approveStore(storeId) {
         
         if (data.success) {
             showToast('Store approved successfully', 'success');
-            loadPendingApprovals();
         } else {
             showToast(data.message || 'Error approving store', 'error');
         }
@@ -994,7 +973,6 @@ async function approveOffer(offerId) {
         
         if (data.success) {
             showToast('Offer approved successfully', 'success');
-            loadPendingApprovals();
         } else {
             showToast(data.message || 'Error approving offer', 'error');
         }
