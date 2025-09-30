@@ -351,8 +351,7 @@ const createMerchantStore = async (req, res) => {
 
     const storeData = {
       ...req.body,
-      merchant: merchantId,
-      logoUrl: req.file ? `/uploads/${req.file.filename}` : undefined // Save logo URL if uploaded
+      merchant: merchantId
     };
 
     const store = new Store(storeData);
@@ -496,8 +495,7 @@ const createMerchantOffer = async (req, res) => {
     const offerData = {
       ...req.body,
       merchant: merchantId,
-      store: store._id,
-      imageUrl: req.file ? `/uploads/${req.file.filename}` : undefined // Save image URL if uploaded
+      store: store._id
     };
 
     const offer = new Offer(offerData);
