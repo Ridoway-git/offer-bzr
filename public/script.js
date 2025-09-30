@@ -628,6 +628,14 @@ async function loadMerchants() {
         if (data.success) {
             merchants = data.data;
             displayMerchants();
+            // Dispatch event for merchant control system
+            window.dispatchEvent(new CustomEvent('merchantsLoaded'));
+            // Add control buttons after displaying merchants
+            setTimeout(() => {
+                if (typeof addMerchantControlButtons === 'function') {
+                    addMerchantControlButtons();
+                }
+            }, 100);
         } else {
             showToast('Error loading merchants', 'error');
         }
@@ -848,7 +856,7 @@ async function searchMerchants() {
                     </div>
                     <div class="merchant-details">
                         <div class="merchant-name">${merchant.name}</div>
-                        <div class="merchant-business">${merchant.businessName} - ${merchant.businessType}</div>
+                        <div class="merchant-business">${merchant.businessName || 'N/A'} - ${merchant.businessType || 'N/A'}</div>
                         <div class="merchant-id">ID: ${merchant._id}</div>
                     </div>
                 </div>
