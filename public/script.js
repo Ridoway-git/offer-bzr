@@ -362,6 +362,10 @@ document.getElementById('offerForm').addEventListener('submit', async function(e
     const method = isEdit ? 'PUT' : 'POST';
 
     try {
+        console.log('Admin offer submission - URL:', url);
+        console.log('Admin offer submission - Method:', method);
+        console.log('Admin offer submission - Data:', offerData);
+        
         const response = await fetch(url, {
             method: method,
             headers: {
@@ -370,7 +374,9 @@ document.getElementById('offerForm').addEventListener('submit', async function(e
             body: JSON.stringify(offerData)
         });
 
+        console.log('Admin offer response status:', response.status);
         const data = await response.json();
+        console.log('Admin offer response data:', data);
 
         if (data.success) {
             showToast(isEdit ? 'Offer updated successfully!' : 'Offer created successfully!', 'success');

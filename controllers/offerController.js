@@ -102,9 +102,12 @@ const getOfferById = async (req, res) => {
 // Create new offer
 const createOffer = async (req, res) => {
   try {
+    console.log('Admin offer creation request body:', req.body);
+    
     // Check for validation errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log('Admin offer validation errors:', errors.array());
       return res.status(400).json({
         success: false,
         message: 'Validation failed',
@@ -151,12 +154,13 @@ const createOffer = async (req, res) => {
 // Update offer
 const updateOffer = async (req, res) => {
   try {
-    console.log('Update offer request:', req.params.id, req.body);
+    console.log('Admin offer update request - ID:', req.params.id);
+    console.log('Admin offer update request body:', req.body);
     
     // Check for validation errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      console.error('Validation errors:', errors.array());
+      console.error('Admin offer update validation errors:', errors.array());
       return res.status(400).json({
         success: false,
         message: 'Validation failed',
