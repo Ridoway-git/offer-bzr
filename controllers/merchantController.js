@@ -344,7 +344,8 @@ const createMerchantStore = async (req, res) => {
 
     const storeData = {
       ...req.body,
-      merchant: merchantId
+      merchant: merchantId,
+      logoUrl: req.file ? `/uploads/${req.file.filename}` : undefined // Save logo URL if uploaded
     };
 
     const store = new Store(storeData);
