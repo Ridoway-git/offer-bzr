@@ -349,10 +349,15 @@ const createMerchantStore = async (req, res) => {
       });
     }
 
+    console.log('Store creation request body:', req.body);
+    console.log('Merchant ID:', merchantId);
+
     const storeData = {
       ...req.body,
       merchant: merchantId
     };
+
+    console.log('Store data to save:', storeData);
 
     const store = new Store(storeData);
     await store.save();
