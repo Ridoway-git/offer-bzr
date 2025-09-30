@@ -22,7 +22,9 @@ const {
   getMerchantOffers,
   createMerchantOffer,
   updateMerchantOffer,
-  deleteMerchantOffer
+  deleteMerchantOffer,
+  toggleMerchantStatus,
+  sendNotificationToMerchant
 } = require('../controllers/merchantController');
 
 const router = express.Router();
@@ -115,6 +117,8 @@ router.delete('/offers/:id', authMiddleware, deleteMerchantOffer);
 // Merchant management routes - MUST come after specific routes
 router.get('/', getAllMerchants);
 router.get('/pending', getPendingApprovals);
+router.put('/:id/toggle-status', toggleMerchantStatus);
+router.post('/:id/notify', sendNotificationToMerchant);
 router.get('/:id', getMerchantById);
 router.post('/', merchantValidation, createMerchant);
 router.put('/:id', merchantValidation, updateMerchant);

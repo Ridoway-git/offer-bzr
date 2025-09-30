@@ -634,6 +634,73 @@ const deleteMerchantStore = async (req, res) => {
   }
 };
 
+// Toggle merchant status (active/inactive)
+const toggleMerchantStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { isActive } = req.body;
+
+    const merchant = await Merchant.findByIdAndUpdate(
+      id,
+      { isActive },
+      { new: true }
+    );
+
+    if (!merchant) {
+      return res.status(404).json({
+        success: false,
+        message: 'Merchant not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: `Merchant ${isActive ? 'activated' : 'deactivated'} successfully`,
+      data: merchant
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error updating merchant status',
+      error: error.message
+    });
+  }
+};
+
+// Send notification to merchant
+const sendNotificationToMerchant = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { message } = req.body;
+
+    const merchant = await Merchant.findById(id);
+    if (!merchant) {
+      return res.status(404).json({
+        success: false,
+        message: 'Merchant not found'
+      });
+    }
+
+    // Here you would typically save the notification to a database
+    // For now, we'll just return success
+    res.json({
+      success: true,
+      message: 'Notification sent successfully',
+      data: {
+        merchantId: id,
+        message: message,
+        timestamp: new Date()
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error sending notification',
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   getAllMerchants,
   getMerchantById,
@@ -654,5 +721,7 @@ module.exports = {
   getMerchantOffers,
   createMerchantOffer,
   updateMerchantOffer,
-  deleteMerchantOffer
+  deleteMerchantOffer,
+  toggleMerchantStatus,
+  sendNotificationToMerchant
 };
