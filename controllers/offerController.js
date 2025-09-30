@@ -12,6 +12,7 @@ const getAllOffers = async (req, res) => {
       store, 
       isFeatured, 
       isActive,
+      search,
       sortBy = 'createdAt',
       sortOrder = 'desc'
     } = req.query;
@@ -36,6 +37,16 @@ const getAllOffers = async (req, res) => {
     // Filter by active status if provided
     if (isActive !== undefined) {
       query.isActive = isActive === 'true';
+    }
+
+    // Search functionality
+    if (search) {
+      query.$or = [
+        { title: new RegExp(search, 'i') },
+        { description: new RegExp(search, 'i') },
+        { category: new RegExp(search, 'i') },
+        { offerCode: new RegExp(search, 'i') }
+      ];
     }
 
     // Filter out expired offers
