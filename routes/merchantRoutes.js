@@ -100,14 +100,14 @@ router.get('/profile', authMiddleware, getMerchantProfile);
 router.put('/profile', authMiddleware, updateMerchantProfile);
 
 // Merchant store routes (protected) - MUST come before /:id route
-router.post('/store', authMiddleware, upload.single('logo'), createMerchantStore);
+router.post('/store', authMiddleware, createMerchantStore);
 router.get('/store', authMiddleware, getMerchantStore);
-router.put('/store', authMiddleware, upload.single('logo'), updateMerchantStore);
+router.put('/store', authMiddleware, updateMerchantStore);
 
 // Merchant offers routes (protected) - MUST come before /:id route
 router.get('/offers', authMiddleware, getMerchantOffers);
-router.post('/offers', authMiddleware, upload.single('image'), createMerchantOffer);
-router.put('/offers/:id', authMiddleware, upload.single('image'), updateMerchantOffer);
+router.post('/offers', authMiddleware, createMerchantOffer);
+router.put('/offers/:id', authMiddleware, updateMerchantOffer);
 router.delete('/offers/:id', authMiddleware, deleteMerchantOffer);
 
 // Merchant management routes - MUST come after specific routes
