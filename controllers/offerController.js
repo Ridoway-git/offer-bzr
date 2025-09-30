@@ -52,6 +52,13 @@ const getAllOffers = async (req, res) => {
       .skip((page - 1) * limit)
       .exec();
 
+    console.log('Offers with merchant data:', offers.map(offer => ({
+      id: offer._id,
+      title: offer.title,
+      merchant: offer.merchant,
+      store: offer.store
+    })));
+
     const total = await Offer.countDocuments(query);
 
     res.json({

@@ -1059,3 +1059,55 @@ function openMerchantDashboard(merchantId) {
     const dashboardUrl = `merchant.html?merchantId=${merchantId}`;
     window.open(dashboardUrl, '_blank');
 }
+
+// Merchant Control Functions
+async function toggleMerchantStatus(merchantId, currentStatus) {
+    try {
+        const newStatus = !currentStatus;
+        const response = await fetch(`${API_BASE_URL}/merchants/${merchantId}/toggle-status`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ isActive: newStatus })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showToast(`Merchant ${newStatus ? 'activated' : 'deactivated'} successfully!`, 'success');
+            loadMerchants();
+        } else {
+            showToast(data.message || 'Error updating merchant status', 'error');
+        }
+    } catch (error) {
+        console.error('Error updating merchant status:', error);
+        showToast('Error updating merchant status', 'error');
+    }
+}
+
+async function sendNotificationToMerchant(merchantId) {
+    const message = prompt('Enter notification message:');
+    if (!message) return;
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/merchants/${merchantId}/notify`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showToast('Notification sent successfully!', 'success');
+        } else {
+            showToast(data.message || 'Error sending notification', 'error');
+        }
+    } catch (error) {
+        console.error('Error sending notification:', error);
+        showToast('Error sending notification', 'error');
+    }
+}
