@@ -286,9 +286,16 @@ const getMerchantProfile = async (req, res) => {
       });
     }
 
+    // Get merchant's store
+    const Store = require('../models/Store');
+    const store = await Store.findOne({ merchant: merchantId });
+
     res.json({
       success: true,
-      data: merchant
+      data: {
+        ...merchant.toObject(),
+        store: store
+      }
     });
   } catch (error) {
     res.status(500).json({
