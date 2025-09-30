@@ -108,8 +108,8 @@ router.delete('/store', authMiddleware, deleteMerchantStore);
 
 // Merchant offers routes (protected) - MUST come before /:id route
 router.get('/offers', authMiddleware, getMerchantOffers);
-router.post('/offers', authMiddleware, createMerchantOffer);
-router.put('/offers/:id', authMiddleware, updateMerchantOffer);
+router.post('/offers', authMiddleware, upload.none(), createMerchantOffer);
+router.put('/offers/:id', authMiddleware, upload.none(), updateMerchantOffer);
 router.delete('/offers/:id', authMiddleware, deleteMerchantOffer);
 
 // Merchant management routes - MUST come after specific routes
