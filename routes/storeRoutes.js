@@ -1,5 +1,7 @@
 const express = require('express');
 const { body } = require('express-validator');
+const authMiddleware = require('../middleware/auth');
+const checkMerchantApproval = require('../middleware/merchantApproval');
 const {
   getAllStores,
   getStoreById,
@@ -62,9 +64,9 @@ const storeValidation = [
 // Routes
 router.get('/', getAllStores);
 router.get('/:id', getStoreById);
-router.post('/', storeValidation, createStore);
-router.put('/:id', storeValidation, updateStore);
-router.delete('/:id', deleteStore);
-router.patch('/:id/toggle-status', toggleStoreStatus);
+router.post('/', authMiddleware, checkMerchantApproval, storeValidation, createStore);
+router.put('/:id', authMiddleware, checkMerchantApproval, storeValidation, updateStore);
+router.delete('/:id', authMiddleware, checkMerchantApproval, deleteStore);
+router.patch('/:id/toggle-status', authMiddleware, checkMerchantApproval, toggleStoreStatus);
 
 module.exports = router;

@@ -169,18 +169,29 @@ const toggleMerchantApproval = async (req, res) => {
       });
     }
 
-    merchant.isApproved = !merchant.isApproved;
+    // Update both approvalStatus and isApproved
+    if (merchant.approvalStatus === 'pending') {
+      merchant.approvalStatus = 'approved';
+      merchant.isApproved = true;
+    } else if (merchant.approvalStatus === 'approved') {
+      merchant.approvalStatus = 'rejected';
+      merchant.isApproved = false;
+    } else if (merchant.approvalStatus === 'rejected') {
+      merchant.approvalStatus = 'approved';
+      merchant.isApproved = true;
+    }
+
     await merchant.save();
 
     res.json({
       success: true,
-      message: `Merchant ${merchant.isApproved ? 'approved' : 'disapproved'} successfully`,
+      message: `Merchant ${merchant.approvalStatus} successfully`,
       data: merchant
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error toggling merchant approval',
+      message: 'Error updating merchant approval',
       error: error.message
     });
   }

@@ -1,5 +1,7 @@
 const express = require('express');
 const { body } = require('express-validator');
+const authMiddleware = require('../middleware/auth');
+const checkMerchantApproval = require('../middleware/merchantApproval');
 const {
   getAllOffers,
   getOfferById,
@@ -110,11 +112,11 @@ router.get('/featured', getFeaturedOffers);
 router.get('/favorites', getFavorites);
 router.get('/categories', getCategories);
 router.get('/:id', getOfferById);
-router.post('/', offerValidation, createOffer);
-router.put('/:id', offerValidation, updateOffer);
-router.delete('/:id', deleteOffer);
-router.patch('/:id/toggle-featured', toggleOfferFeatured);
-router.patch('/:id/toggle-status', toggleOfferStatus);
+router.post('/', authMiddleware, checkMerchantApproval, offerValidation, createOffer);
+router.put('/:id', authMiddleware, checkMerchantApproval, offerValidation, updateOffer);
+router.delete('/:id', authMiddleware, checkMerchantApproval, deleteOffer);
+router.patch('/:id/toggle-featured', authMiddleware, checkMerchantApproval, toggleOfferFeatured);
+router.patch('/:id/toggle-status', authMiddleware, checkMerchantApproval, toggleOfferStatus);
 router.get('/:id/favorite-status', getFavoriteStatus);
 router.post('/:id/favorite', toggleFavorite);
 

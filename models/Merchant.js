@@ -53,7 +53,12 @@ const merchantSchema = new mongoose.Schema({
   },
   address: {
     type: String,
-    trim: true
+        trim: true
+  },
+  approvalStatus: {
+    type: String,
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'pending'
   },
   isApproved: {
     type: Boolean,
@@ -80,6 +85,7 @@ merchantSchema.pre('save', function(next) {
 
 merchantSchema.index({ email: 1 });
 merchantSchema.index({ isApproved: 1 });
+merchantSchema.index({ approvalStatus: 1 });
 merchantSchema.index({ isActive: 1 });
 
 module.exports = mongoose.model('Merchant', merchantSchema);

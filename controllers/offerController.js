@@ -1,5 +1,6 @@
 const Offer = require('../models/Offer');
 const Store = require('../models/Store');
+const User = require('../models/User');
 const { validationResult } = require('express-validator');
 
 // Get all offers
@@ -37,6 +38,9 @@ const getAllOffers = async (req, res) => {
     // Filter by active status if provided
     if (isActive !== undefined) {
       query.isActive = isActive === 'true';
+    } else {
+      // By default, only show active offers for public API
+      query.isActive = true;
     }
 
     // Search functionality
@@ -373,12 +377,40 @@ const getCategories = async (req, res) => {
 // Get user's favorite offers
 const getFavorites = async (req, res) => {
   try {
-    // For now, return all offers as favorites (mock implementation)
-    // In a real app, you would fetch user's favorite offers from database
-    const offers = await Offer.find({ isActive: true })
-      .populate('store', 'name category logoUrl')
-      .sort({ createdAt: -1 })
-      .limit(10);
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: 'Authentication required',
+        favorites: []
+      });
+    }
+
+    // Extract user info from token
+    // For now, we'll use a simple approach - in production you'd verify the JWT
+    const userEmail = req.headers['x-user-email'] || 'user@example.com';
+    const userUid = req.headers['x-user-uid'] || 'default-uid';
+    console.log('Getting favorites for user:', userEmail, 'UID:', userUid);
+    
+    // Find or create user
+    let user = await User.findOne({ email: userEmail });
+    if (!user) {
+      user = new User({
+        email: userEmail,
+        displayName: 'User',
+        favorites: []
+      });
+      await user.save();
+    }
+
+    // Get user's favorite offers
+    const offers = await Offer.find({ 
+      _id: { $in: user.favorites },
+      isActive: true 
+    })
+    .populate('store', 'name category logoUrl')
+    .sort({ createdAt: -1 });
 
     res.json({
       success: true,
@@ -396,11 +428,35 @@ const getFavorites = async (req, res) => {
 // Get favorite status for an offer
 const getFavoriteStatus = async (req, res) => {
   try {
-    // For now, return false as we don't have user authentication implemented
-    // In a real app, you would check the user's favorites
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    const { id } = req.params;
+    
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: 'Authentication required',
+        isFavorite: false
+      });
+    }
+
+    const userEmail = req.headers['x-user-email'] || 'user@example.com';
+    const userUid = req.headers['x-user-uid'] || 'default-uid';
+    
+    // Find user
+    const user = await User.findOne({ email: userEmail });
+    if (!user) {
+      return res.json({
+        success: true,
+        isFavorite: false
+      });
+    }
+
+    // Check if offer is in user's favorites
+    const isFavorite = user.favorites.includes(id);
+
     res.json({
       success: true,
-      isFavorite: false
+      isFavorite: isFavorite
     });
   } catch (error) {
     res.status(500).json({
@@ -414,13 +470,58 @@ const getFavoriteStatus = async (req, res) => {
 // Toggle favorite status for an offer
 const toggleFavorite = async (req, res) => {
   try {
-    // For now, return a mock response
-    // In a real app, you would add/remove from user's favorites
-    res.json({
-      success: true,
-      isFavorite: true,
-      message: 'Added to favorites'
-    });
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    const { id } = req.params;
+    
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: 'Authentication required'
+      });
+    }
+
+    const userEmail = req.headers['x-user-email'] || 'user@example.com';
+    const userUid = req.headers['x-user-uid'] || 'default-uid';
+    console.log('Toggling favorite for user:', userEmail, 'UID:', userUid, 'offer:', id);
+    
+    // Find or create user
+    let user = await User.findOne({ email: userEmail });
+    if (!user) {
+      user = new User({
+        email: userEmail,
+        displayName: 'User',
+        favorites: []
+      });
+    }
+
+    console.log('Current user favorites:', user.favorites);
+    
+    // Check if offer is already in favorites
+    const isCurrentlyFavorite = user.favorites.some(favId => favId.toString() === id);
+    console.log('Is currently favorite:', isCurrentlyFavorite);
+    
+    if (isCurrentlyFavorite) {
+      // Remove from favorites
+      user.favorites = user.favorites.filter(favId => favId.toString() !== id);
+      await user.save();
+      console.log('Removed from favorites. New favorites:', user.favorites);
+      
+      res.json({
+        success: true,
+        isFavorite: false,
+        message: 'Removed from favorites'
+      });
+    } else {
+      // Add to favorites
+      user.favorites.push(id);
+      await user.save();
+      
+      res.json({
+        success: true,
+        isFavorite: true,
+        message: 'Added to favorites'
+      });
+    }
   } catch (error) {
     res.status(500).json({
       success: false,
