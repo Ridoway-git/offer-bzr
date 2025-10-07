@@ -708,7 +708,7 @@ function displayMerchants() {
                     </div>
                     <div class="detail-content">
                         <span class="detail-label">Phone</span>
-                        <span class="detail-text">${merchant.phone}</span>
+                        <span class="detail-text">${merchant.phone || 'Not provided'}</span>
                     </div>
                 </div>
                 
@@ -730,7 +730,7 @@ function displayMerchants() {
                     </div>
                     <div class="detail-content">
                         <span class="detail-label">Address</span>
-                        <span class="detail-text">${merchant.address}</span>
+                        <span class="detail-text">${merchant.address || 'Not provided'}</span>
                     </div>
                 </div>
             </div>
@@ -888,7 +888,7 @@ async function searchMerchants() {
                     </div>
                     <div class="detail-content">
                         <span class="detail-label">Phone</span>
-                        <span class="detail-text">${merchant.phone}</span>
+                        <span class="detail-text">${merchant.phone || 'Not provided'}</span>
                     </div>
                 </div>
                 
@@ -910,7 +910,7 @@ async function searchMerchants() {
                     </div>
                     <div class="detail-content">
                         <span class="detail-label">Address</span>
-                        <span class="detail-text">${merchant.address}</span>
+                        <span class="detail-text">${merchant.address || 'Not provided'}</span>
                     </div>
                 </div>
             </div>
