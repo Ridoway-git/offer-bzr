@@ -942,8 +942,12 @@ async function searchMerchants() {
 
 async function toggleMerchantApproval(merchantId, currentStatus) {
     try {
-        const response = await fetch(`${API_BASE_URL}/merchants/${merchantId}/toggle-approval`, {
-            method: 'PATCH'
+        const response = await fetch(`${API_BASE_URL}/admin/merchants/${merchantId}/toggle-approval`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer admin-token'
+            }
         });
         
         const data = await response.json();
@@ -1068,10 +1072,11 @@ document.getElementById('merchantForm').addEventListener('submit', async functio
 async function toggleMerchantStatus(merchantId, currentStatus) {
     try {
         const newStatus = !currentStatus;
-        const response = await fetch(`${API_BASE_URL}/merchants/${merchantId}/toggle-status`, {
-            method: 'PUT',
+        const response = await fetch(`${API_BASE_URL}/admin/merchants/${merchantId}/toggle-status`, {
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': 'Bearer admin-token'
             },
             body: JSON.stringify({ isActive: newStatus })
         });
@@ -1095,12 +1100,15 @@ async function sendNotificationToMerchant(merchantId) {
     if (!message) return;
 
     try {
-        const response = await fetch(`${API_BASE_URL}/merchants/${merchantId}/notify`, {
+        const response = await fetch(`${API_BASE_URL}/api/merchants/${merchantId}/notify`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ message })
+            body: JSON.stringify({ 
+                message,
+                type: 'general'
+            })
         });
 
         const data = await response.json();
