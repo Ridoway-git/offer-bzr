@@ -38,10 +38,11 @@ function addMerchantControlButtons() {
 async function toggleMerchantStatus(merchantId, currentStatus) {
     try {
         const newStatus = !currentStatus;
-        const response = await fetch(`${API_BASE_URL}/merchants/${merchantId}/toggle-status`, {
+        const response = await fetch(`${API_BASE_URL}/admin/merchants/${merchantId}/toggle-status`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': 'Bearer admin-token' // Simple admin token for now
             },
             body: JSON.stringify({ isActive: newStatus })
         });
@@ -91,10 +92,11 @@ async function sendNotificationToMerchant(merchantId) {
 async function toggleMerchantStatus(merchantId, currentStatus) {
     try {
         const newStatus = !currentStatus;
-        const response = await fetch(`${API_BASE_URL}/merchants/${merchantId}/toggle-status`, {
+        const response = await fetch(`${API_BASE_URL}/admin/merchants/${merchantId}/toggle-status`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': 'Bearer admin-token' // Simple admin token for now
             },
             body: JSON.stringify({ isActive: newStatus })
         });
