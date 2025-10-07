@@ -224,7 +224,8 @@ document.getElementById('storeForm').addEventListener('submit', async function(e
 // Offer functions
 async function loadOffers() {
     try {
-        const response = await fetch(`${API_BASE_URL}/offers`);
+        // Fetch ALL offers (including deactivated ones) for admin panel
+        const response = await fetch(`${API_BASE_URL}/offers?isActive=all`);
         const data = await response.json();
         
         if (data.success) {
@@ -248,10 +249,13 @@ function displayOffers(offersList) {
     }
 
     offersListElement.innerHTML = offersList.map(offer => `
-        <div class="offer-item">
+        <div class="offer-item ${!offer.isActive ? 'deactivated' : ''}">
             <div class="offer-header">
                 <div>
-                    <div class="offer-title">${offer.title}</div>
+                    <div class="offer-title">
+                        ${offer.title}
+                        ${!offer.isActive ? '<span class="deactivated-label">(DEACTIVATED)</span>' : ''}
+                    </div>
                     <div class="offer-category">${offer.category}</div>
                     ${offer.merchant ? `<div class="merchant-badge">By Merchant</div>` : ''}
                 </div>

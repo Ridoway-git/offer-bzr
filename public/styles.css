@@ -510,6 +510,28 @@ body {
     transition: all 0.2s ease;
 }
 
+/* Deactivated offer styles */
+.offer-item.deactivated {
+    background: #f9fafb;
+    border-color: #d1d5db;
+    opacity: 0.8;
+}
+
+.offer-item.deactivated .offer-title {
+    color: #6b7280;
+}
+
+.deactivated-label {
+    color: #dc2626;
+    font-weight: bold;
+    font-size: 12px;
+    margin-left: 8px;
+    background: #fef2f2;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid #fecaca;
+}
+
 .store-item:hover,
 .offer-item:hover {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
