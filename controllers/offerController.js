@@ -37,7 +37,12 @@ const getAllOffers = async (req, res) => {
 
     // Filter by active status if provided
     if (isActive !== undefined) {
-      query.isActive = isActive === 'true';
+      if (isActive === 'all') {
+        // For admin panel, show all offers (including deactivated)
+        // Don't add isActive filter
+      } else {
+        query.isActive = isActive === 'true';
+      }
     } else {
       // By default, only show active offers for public API
       query.isActive = true;
