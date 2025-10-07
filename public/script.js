@@ -402,8 +402,12 @@ document.getElementById('offerForm').addEventListener('submit', async function(e
 // Action functions
 async function toggleStoreStatus(storeId, currentStatus) {
     try {
-        const response = await fetch(`${API_BASE_URL}/stores/${storeId}/toggle-status`, {
-            method: 'PATCH'
+        const response = await fetch(`${API_BASE_URL}/admin/stores/${storeId}/toggle-status`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer admin-token' // Simple admin token for now
+            }
         });
 
         const data = await response.json();
@@ -448,8 +452,12 @@ async function deleteStore(storeId) {
 
 async function toggleOfferFeatured(offerId, currentStatus) {
     try {
-        const response = await fetch(`${API_BASE_URL}/offers/${offerId}/toggle-featured`, {
-            method: 'PATCH'
+        const response = await fetch(`${API_BASE_URL}/admin/offers/${offerId}/toggle-featured`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer admin-token' // Simple admin token for now
+            }
         });
 
         const data = await response.json();
@@ -469,8 +477,12 @@ async function toggleOfferFeatured(offerId, currentStatus) {
 
 async function toggleOfferStatus(offerId, currentStatus) {
     try {
-        const response = await fetch(`${API_BASE_URL}/offers/${offerId}/toggle-status`, {
-            method: 'PATCH'
+        const response = await fetch(`${API_BASE_URL}/admin/offers/${offerId}/toggle-status`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer admin-token' // Simple admin token for now
+            }
         });
 
         const data = await response.json();

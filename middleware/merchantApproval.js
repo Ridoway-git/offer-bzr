@@ -50,3 +50,4 @@ const checkMerchantApproval = async (req, res, next) => {
 };
 
 module.exports = checkMerchantApproval;
+
