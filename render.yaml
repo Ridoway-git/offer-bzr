@@ -12,3 +12,5 @@ services:
         value: mongodb+srv://loopsridoway:jASEqeDKhwO2D21H@cluster0.zfv1kvp.mongodb.net/offer_bazar_prod?retryWrites=true&w=majority&appName=Cluster0
       - key: PORT
         value: 10000
+      - key: JWT_SECRET
+        value: your-super-secret-jwt-key-for-production-2024
