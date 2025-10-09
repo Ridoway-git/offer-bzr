@@ -62,7 +62,7 @@ async function loadDashboard() {
 // Store functions
 async function loadStores() {
     try {
-        const response = await fetch(`${API_BASE_URL}/stores`);
+        const response = await fetch(`${API_BASE_URL}/stores?isActive=all`);
         const data = await response.json();
         
         if (data.success) {

@@ -15,7 +15,15 @@ const getAllStores = async (req, res) => {
 
     // Filter by active status if provided
     if (isActive !== undefined) {
-      query.isActive = isActive === 'true';
+      if (isActive === 'all') {
+        // For admin panel, show all stores (including deactivated)
+        // Don't add isActive filter
+      } else {
+        query.isActive = isActive === 'true';
+      }
+    } else {
+      // By default, only show active stores for public API
+      query.isActive = true;
     }
 
     const stores = await Store.find(query)
