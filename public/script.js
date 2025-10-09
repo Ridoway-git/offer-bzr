@@ -510,7 +510,7 @@ async function deleteOffer(offerId) {
     }
 
     try {
-        const response = await fetch(`${API_BASE_URL}/offers/${offerId}`, {
+        const response = await fetch(`${API_BASE_URL}/merchants/offers/${offerId}`, {
             method: 'DELETE'
         });
 
