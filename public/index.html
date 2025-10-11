@@ -319,5 +319,47 @@
 
     <script src="script.js"></script>
     <script src="admin-merchant-control.js"></script>
+    
+    <script>
+        // Check admin authentication
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is on admin login page
+            if (window.location.pathname === '/admin-login.html') {
+                return; // Don't redirect if already on login page
+            }
+            
+            if (localStorage.getItem('adminLoggedIn') !== 'true') {
+                // Redirect to login if not authenticated
+                window.location.href = '/admin-login.html';
+            }
+        });
+        
+        // Logout functionality
+        function adminLogout() {
+            localStorage.removeItem('adminLoggedIn');
+            localStorage.removeItem('adminEmail');
+            window.location.href = '/admin-login.html';
+        }
+        
+        // Add logout button to header
+        document.addEventListener('DOMContentLoaded', function() {
+            // Only add logout button if not on login page
+            if (window.location.pathname !== '/admin-login.html') {
+                const header = document.querySelector('.header');
+                if (header) {
+                    const logoutBtn = document.createElement('button');
+                    logoutBtn.innerHTML = '<i class="fas fa-sign-out-alt"></i> Logout';
+                    logoutBtn.className = 'btn btn-danger';
+                    logoutBtn.style.marginLeft = 'auto';
+                    logoutBtn.onclick = adminLogout;
+                    
+                    const nav = header.querySelector('.nav');
+                    if (nav) {
+                        nav.appendChild(logoutBtn);
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>
