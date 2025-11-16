@@ -187,7 +187,7 @@ document.getElementById('storeForm').addEventListener('submit', async function(e
     };
 
     const isEdit = this.dataset.editId;
-    const url = isEdit ? `${API_BASE_URL}/stores/${isEdit}` : `${API_BASE_URL}/stores`;
+    const url = isEdit ? `${API_BASE_URL}/admin/stores/${isEdit}` : `${API_BASE_URL}/admin/stores`;
     const method = isEdit ? 'PUT' : 'POST';
 
     try {
@@ -195,6 +195,7 @@ document.getElementById('storeForm').addEventListener('submit', async function(e
             method: method,
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': 'Bearer admin-token' // Simple admin token for now
             },
             body: JSON.stringify(storeData)
         });
@@ -436,8 +437,12 @@ async function deleteStore(storeId) {
     }
 
     try {
-        const response = await fetch(`${API_BASE_URL}/stores/${storeId}`, {
-            method: 'DELETE'
+        const response = await fetch(`${API_BASE_URL}/admin/stores/${storeId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer admin-token' // Simple admin token for now
+            }
         });
 
         const data = await response.json();
@@ -511,8 +516,12 @@ async function deleteOffer(offerId) {
     }
 
     try {
-        const response = await fetch(`${API_BASE_URL}/merchants/offers/${offerId}`, {
-            method: 'DELETE'
+        const response = await fetch(`${API_BASE_URL}/admin/offers/${offerId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer admin-token' // Simple admin token for now
+            }
         });
 
         const data = await response.json();
@@ -968,7 +977,11 @@ async function toggleMerchantApproval(merchantId, currentStatus) {
 async function approveStore(storeId) {
     try {
         const response = await fetch(`${API_BASE_URL}/merchants/stores/${storeId}/approve`, {
-            method: 'PATCH'
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer admin-token' // Simple admin token for now
+            }
         });
         
         const data = await response.json();
@@ -987,7 +1000,11 @@ async function approveStore(storeId) {
 async function approveOffer(offerId) {
     try {
         const response = await fetch(`${API_BASE_URL}/merchants/offers/${offerId}/approve`, {
-            method: 'PATCH'
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer admin-token' // Simple admin token for now
+            }
         });
         
         const data = await response.json();
@@ -1010,7 +1027,11 @@ async function deleteMerchant(merchantId) {
     
     try {
         const response = await fetch(`${API_BASE_URL}/merchants/${merchantId}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer admin-token' // Simple admin token for now
+            }
         });
         
         const data = await response.json();
@@ -1101,10 +1122,11 @@ async function sendNotificationToMerchant(merchantId) {
     if (!message) return;
 
     try {
-        const response = await fetch(`${API_BASE_URL}/api/merchants/${merchantId}/notify`, {
+        const response = await fetch(`${API_BASE_URL}/merchants/${merchantId}/notify`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': 'Bearer admin-token' // Simple admin token for now
             },
             body: JSON.stringify({ 
                 message,
