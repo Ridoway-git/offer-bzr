@@ -117,13 +117,13 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
     }
 });
 
-// Routes
+// Routes - Admin routes first to ensure they're matched before regular routes
+app.use('/api/admin', adminRoutes);
 app.use('/api/stores', storeRoutes);
 app.use('/api/offers', offerRoutes);
 app.use('/api/merchants', merchantRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api', notificationRoutes);
-app.use('/api/admin', adminRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

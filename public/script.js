@@ -361,7 +361,7 @@ document.getElementById('offerForm').addEventListener('submit', async function(e
     };
 
     const isEdit = this.dataset.editId;
-    const url = isEdit ? `${API_BASE_URL}/offers/${isEdit}` : `${API_BASE_URL}/offers`;
+    const url = isEdit ? `${API_BASE_URL}/admin/offers/${isEdit}` : `${API_BASE_URL}/admin/offers`;
     const method = isEdit ? 'PUT' : 'POST';
 
     try {
@@ -373,6 +373,7 @@ document.getElementById('offerForm').addEventListener('submit', async function(e
             method: method,
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': 'Bearer admin-token' // Simple admin token for now
             },
             body: JSON.stringify(offerData)
         });
