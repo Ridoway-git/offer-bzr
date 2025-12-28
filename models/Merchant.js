@@ -68,6 +68,22 @@ const merchantSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
+  accessFee: {
+    type: Number,
+    default: 0,
+    min: [0, 'Access fee cannot be negative']
+  },
+  accessFeePaid: {
+    type: Boolean,
+    default: false
+  },
+  accessFeePaymentDate: {
+    type: Date
+  },
+  accessFeePaymentId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Payment'
+  },
   createdAt: {
     type: Date,
     default: Date.now
