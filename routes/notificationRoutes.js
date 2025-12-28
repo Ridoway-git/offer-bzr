@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const adminAuthMiddleware = require('../middleware/adminAuth');
 const {
   sendNotificationToMerchant,
   getMerchantNotifications,
@@ -8,8 +9,8 @@ const {
   deleteNotification
 } = require('../controllers/notificationController');
 
-// Send notification to merchant
-router.post('/merchants/:id/notify', sendNotificationToMerchant);
+// Send notification to merchant (admin only)
+router.post('/merchants/:id/notify', adminAuthMiddleware, sendNotificationToMerchant);
 
 // Get notifications for a merchant
 router.get('/merchants/:id/notifications', getMerchantNotifications);

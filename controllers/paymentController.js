@@ -257,6 +257,15 @@ const approvePayment = async (req, res) => {
       }
     }
 
+    // Check if this payment is for access fee
+    const merchant = await Merchant.findById(payment.merchant);
+    if (merchant && payment.amount >= merchant.accessFee && !merchant.accessFeePaid) {
+      merchant.accessFeePaid = true;
+      merchant.accessFeePaymentDate = new Date();
+      merchant.accessFeePaymentId = payment._id;
+      await merchant.save();
+    }
+
     res.json({
       success: true,
       message: 'Payment approved successfully',

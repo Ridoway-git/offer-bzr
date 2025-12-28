@@ -25,6 +25,20 @@ const {
   toggleMerchantApproval,
   toggleMerchantStatus
 } = require('../controllers/merchantController');
+const {
+  setMerchantAccessFee,
+  getMerchantsWithPaymentStatus,
+  getMerchantPaymentDetails,
+  markAccessFeeAsPaid,
+  sendNotificationToMerchant,
+  sendNotificationToMultipleMerchants
+} = require('../controllers/adminController');
+const {
+  getPendingPayments,
+  getAllPayments,
+  approvePayment,
+  rejectPayment
+} = require('../controllers/paymentController');
 
 const router = express.Router();
 
@@ -119,8 +133,22 @@ router.patch('/stores/:id/toggle-status', adminAuthMiddleware, toggleStoreStatus
 
 // Admin Merchant Routes
 router.get('/merchants', getAllMerchants);
+router.get('/merchants/payment-status', adminAuthMiddleware, getMerchantsWithPaymentStatus);
 router.get('/merchants/:id', getMerchantById);
+router.get('/merchants/:id/payment-details', adminAuthMiddleware, getMerchantPaymentDetails);
 router.patch('/merchants/:id/toggle-approval', adminAuthMiddleware, toggleMerchantApproval);
 router.patch('/merchants/:id/toggle-status', adminAuthMiddleware, toggleMerchantStatus);
+router.post('/merchants/:merchantId/set-access-fee', adminAuthMiddleware, setMerchantAccessFee);
+router.post('/merchants/:merchantId/mark-fee-paid', adminAuthMiddleware, markAccessFeeAsPaid);
+
+// Admin Payment Routes
+router.get('/payments/pending', adminAuthMiddleware, getPendingPayments);
+router.get('/payments/all', adminAuthMiddleware, getAllPayments);
+router.patch('/payments/:id/approve', adminAuthMiddleware, approvePayment);
+router.patch('/payments/:id/reject', adminAuthMiddleware, rejectPayment);
+
+// Admin Notification Routes
+router.post('/merchants/:merchantId/notify', adminAuthMiddleware, sendNotificationToMerchant);
+router.post('/merchants/notify-multiple', adminAuthMiddleware, sendNotificationToMultipleMerchants);
 
 module.exports = router;
