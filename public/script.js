@@ -647,11 +647,37 @@ let pendingOffers = [];
 
 async function loadMerchants() {
     try {
-        const response = await fetch(`${API_BASE_URL}/merchants`);
-        const data = await response.json();
+        // Try to load merchants with payment status first
+        const response = await fetch(`${API_BASE_URL}/admin/merchants/payment-status`, {
+            headers: {
+                'Authorization': 'Bearer admin-token',
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data.success) {
+                merchants = data.data;
+                displayMerchants();
+                // Dispatch event for merchant control system
+                window.dispatchEvent(new CustomEvent('merchantsLoaded'));
+                // Add control buttons after displaying merchants
+                setTimeout(() => {
+                    if (typeof addMerchantControlButtons === 'function') {
+                        addMerchantControlButtons();
+                    }
+                }, 100);
+                return;
+            }
+        }
         
-        if (data.success) {
-            merchants = data.data;
+        // Fallback to regular merchants endpoint
+        const fallbackResponse = await fetch(`${API_BASE_URL}/merchants`);
+        const fallbackData = await fallbackResponse.json();
+        
+        if (fallbackData.success) {
+            merchants = fallbackData.data;
             displayMerchants();
             // Dispatch event for merchant control system
             window.dispatchEvent(new CustomEvent('merchantsLoaded'));
@@ -687,7 +713,7 @@ function displayMerchants() {
                     </div>
                     <div class="merchant-details">
                         <div class="merchant-name">${merchant.name}</div>
-                        <div class="merchant-business">${merchant.businessName} - ${merchant.businessType}</div>
+                        <div class="merchant-business">${merchant.businessName || 'N/A'} - ${merchant.businessType || 'N/A'}</div>
                         <div class="merchant-id">ID: ${merchant._id}</div>
                     </div>
                 </div>
@@ -698,10 +724,26 @@ function displayMerchants() {
                     <span class="status-badge ${merchant.isActive ? 'status-active' : 'status-inactive'}">
                         ${merchant.isActive ? 'Active' : 'Inactive'}
                     </span>
+                    ${merchant.accessFee !== undefined ? `
+                        <span class="status-badge ${merchant.accessFeePaid ? 'status-approved' : 'status-pending'}">
+                            Fee: ৳${(merchant.accessFee || 0).toFixed(2)} - ${merchant.accessFeePaid ? 'Paid' : 'Pending'}
+                        </span>
+                    ` : ''}
                 </div>
             </div>
             
             <div class="merchant-details-grid">
+                ${merchant.accessFee !== undefined ? `
+                    <div class="detail-item">
+                        <div class="detail-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="detail-content">
+                            <span class="detail-label">Access Fee</span>
+                            <span class="detail-text">৳${(merchant.accessFee || 0).toFixed(2)} ${merchant.accessFeePaid ? '(Paid)' : '(Pending)'}</span>
+                        </div>
+                    </div>
+                ` : ''}
                 <div class="detail-item">
                     <div class="detail-icon">
                         <i class="fas fa-envelope"></i>
@@ -762,6 +804,11 @@ function displayMerchants() {
                 <button class="btn btn-primary" onclick="sendNotificationToMerchant('${merchant._id}')">
                     <i class="fas fa-bell"></i> Notify
                 </button>
+                ${merchant.accessFee !== undefined && !merchant.accessFeePaid && merchant.accessFee > 0 ? `
+                    <button class="btn btn-success" onclick="markAccessFeePaid('${merchant._id}')">
+                        <i class="fas fa-check"></i> Mark Fee Paid
+                    </button>
+                ` : ''}
                 <button class="btn btn-danger" onclick="deleteMerchant('${merchant._id}')">
                     <i class="fas fa-trash"></i> Delete
                 </button>
