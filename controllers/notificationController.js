@@ -94,19 +94,96 @@ const getMerchantNotifications = async (req, res) => {
   }
 };
 
+// Get notifications for merchant by token (for authenticated merchants)
+const getMerchantNotificationsByToken = async (req, res) => {
+  try {
+    const merchantId = req.user?.id;
+    const { page = 1, limit = 50, unreadOnly = false } = req.query;
+
+    if (!merchantId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Unauthorized'
+      });
+    }
+
+    // Build query
+    const query = { merchant: merchantId };
+    if (unreadOnly === 'true') {
+      query.isRead = false;
+    }
+
+    // Get notifications with pagination
+    const notifications = await Notification.find(query)
+      .sort({ createdAt: -1 })
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .exec();
+
+    const total = await Notification.countDocuments(query);
+
+    res.json({
+      success: true,
+      data: notifications,
+      total: total,
+      page: parseInt(page),
+      pages: Math.ceil(total / limit)
+    });
+  } catch (error) {
+    console.error('Error fetching notifications:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching notifications',
+      error: error.message
+    });
+  }
+};
+
+// Mark all notifications as read for authenticated merchant
+const markAllMerchantNotificationsAsRead = async (req, res) => {
+  try {
+    const merchantId = req.user?.id;
+
+    if (!merchantId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Unauthorized'
+      });
+    }
+
+    const result = await Notification.updateMany(
+      { merchant: merchantId, isRead: false },
+      { 
+        isRead: true,
+        readAt: new Date()
+      }
+    );
+
+    res.json({
+      success: true,
+      message: `${result.modifiedCount} notifications marked as read`,
+      data: {
+        merchantId: merchantId,
+        updatedCount: result.modifiedCount
+      }
+    });
+  } catch (error) {
+    console.error('Error marking all notifications as read:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error marking all notifications as read',
+      error: error.message
+    });
+  }
+};
+
 // Mark notification as read
 const markNotificationAsRead = async (req, res) => {
   try {
     const { id } = req.params;
+    const merchantId = req.user?.id;
 
-    const notification = await Notification.findByIdAndUpdate(
-      id,
-      { 
-        isRead: true,
-        readAt: new Date()
-      },
-      { new: true }
-    );
+    const notification = await Notification.findById(id);
 
     if (!notification) {
       return res.status(404).json({
@@ -114,6 +191,18 @@ const markNotificationAsRead = async (req, res) => {
         message: 'Notification not found'
       });
     }
+
+    // Check if merchant is authorized (if merchantId is provided)
+    if (merchantId && notification.merchant.toString() !== merchantId) {
+      return res.status(403).json({
+        success: false,
+        message: 'Unauthorized to mark this notification as read'
+      });
+    }
+
+    notification.isRead = true;
+    notification.readAt = new Date();
+    await notification.save();
 
     res.json({
       success: true,
@@ -195,7 +284,9 @@ const deleteNotification = async (req, res) => {
 module.exports = {
   sendNotificationToMerchant,
   getMerchantNotifications,
+  getMerchantNotificationsByToken,
   markNotificationAsRead,
   markAllNotificationsAsRead,
+  markAllMerchantNotificationsAsRead,
   deleteNotification
 };

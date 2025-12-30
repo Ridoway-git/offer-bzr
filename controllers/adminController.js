@@ -268,12 +268,68 @@ const sendNotificationToMultipleMerchants = async (req, res) => {
   }
 };
 
+// Send notification to all merchants
+const sendNotificationToAllMerchants = async (req, res) => {
+  try {
+    const { message, type = 'info' } = req.body;
+
+    if (!message) {
+      return res.status(400).json({
+        success: false,
+        message: 'Message is required'
+      });
+    }
+
+    // Get all merchants
+    const allMerchants = await Merchant.find({ isActive: true });
+    
+    if (allMerchants.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'No active merchants found'
+      });
+    }
+
+    // Create notifications for all merchants
+    const notifications = await Promise.all(
+      allMerchants.map(async (merchant) => {
+        const notification = new Notification({
+          merchant: merchant._id,
+          message,
+          type,
+          sentBy: 'Admin'
+        });
+
+        return await notification.save();
+      })
+    );
+
+    res.json({
+      success: true,
+      message: `Notification sent to ${notifications.length} merchants`,
+      data: {
+        sent: notifications.length,
+        total: allMerchants.length,
+        notifications: notifications
+      }
+    });
+  } catch (error) {
+    console.error('Error sending notifications to all merchants:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error sending notifications',
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   setMerchantAccessFee,
   getMerchantsWithPaymentStatus,
   getMerchantPaymentDetails,
   markAccessFeeAsPaid,
   sendNotificationToMerchant,
-  sendNotificationToMultipleMerchants
+  sendNotificationToMultipleMerchants,
+  sendNotificationToAllMerchants
 };
 

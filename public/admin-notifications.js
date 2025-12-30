@@ -87,14 +87,34 @@ document.addEventListener('DOMContentLoaded', function() {
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
 
             try {
-                const result = await window.sendNotificationToAll(title, message, type);
+                // Send to Firebase (for general users)
+                const firebaseResult = await window.sendNotificationToAll(title, message, type);
                 
-                if (result.success) {
-                    showToast('Notification sent successfully to all users!', 'success');
+                // Also send to all merchants via MongoDB
+                const apiResponse = await fetch(`${API_BASE_URL}/admin/merchants/notify-all`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer admin-token'
+                    },
+                    body: JSON.stringify({
+                        message: `${title}: ${message}`,
+                        type: type
+                    })
+                });
+
+                const apiData = await apiResponse.json();
+                
+                if (firebaseResult.success && apiData.success) {
+                    showToast(`Notification sent successfully to all users and ${apiData.data.sent} merchants!`, 'success');
+                    notificationForm.reset();
+                    loadRecentNotifications();
+                } else if (apiData.success) {
+                    showToast(`Notification sent to ${apiData.data.sent} merchants!`, 'success');
                     notificationForm.reset();
                     loadRecentNotifications();
                 } else {
-                    showToast(result.error || 'Error sending notification', 'error');
+                    showToast(apiData.message || 'Error sending notification', 'error');
                 }
             } catch (error) {
                 console.error('Error sending notification:', error);

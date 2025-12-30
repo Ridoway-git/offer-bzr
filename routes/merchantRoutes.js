@@ -114,6 +114,11 @@ router.post('/offers', authMiddleware, upload.none(), createMerchantOffer);
 router.put('/offers/:id', authMiddleware, upload.none(), updateMerchantOffer);
 router.delete('/offers/:id', deleteMerchantOffer); // Temporarily remove auth for testing
 
+// Merchant notifications routes (protected)
+router.get('/notifications', authMiddleware, require('../controllers/notificationController').getMerchantNotificationsByToken);
+router.patch('/notifications/:id/read', authMiddleware, require('../controllers/notificationController').markNotificationAsRead);
+router.patch('/notifications/read-all', authMiddleware, require('../controllers/notificationController').markAllMerchantNotificationsAsRead);
+
 // Merchant management routes - MUST come after specific routes
 router.get('/', getAllMerchants);
 router.get('/pending', getPendingApprovals);
