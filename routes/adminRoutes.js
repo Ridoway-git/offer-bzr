@@ -150,5 +150,6 @@ router.patch('/payments/:id/reject', adminAuthMiddleware, rejectPayment);
 // Admin Notification Routes
 router.post('/merchants/:merchantId/notify', adminAuthMiddleware, sendNotificationToMerchant);
 router.post('/merchants/notify-multiple', adminAuthMiddleware, sendNotificationToMultipleMerchants);
+router.post('/merchants/notify-all', adminAuthMiddleware, sendNotificationToAllMerchants);
 
 module.exports = router;
