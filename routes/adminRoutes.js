@@ -31,7 +31,8 @@ const {
   getMerchantPaymentDetails,
   markAccessFeeAsPaid,
   sendNotificationToMerchant,
-  sendNotificationToMultipleMerchants
+  sendNotificationToMultipleMerchants,
+  sendNotificationToAllMerchants
 } = require('../controllers/adminController');
 const {
   getPendingPayments,
