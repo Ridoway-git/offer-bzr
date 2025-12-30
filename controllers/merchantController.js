@@ -1,6 +1,7 @@
 const Merchant = require('../models/Merchant');
 const Store = require('../models/Store');
 const Offer = require('../models/Offer');
+const Notification = require('../models/Notification');
 const { validationResult } = require('express-validator');
 
 const getAllMerchants = async (req, res) => {
@@ -673,7 +674,7 @@ const toggleMerchantStatus = async (req, res) => {
 const sendNotificationToMerchant = async (req, res) => {
   try {
     const { id } = req.params;
-    const { message } = req.body;
+    const { message, type = 'info' } = req.body;
 
     const merchant = await Merchant.findById(id);
     if (!merchant) {
@@ -683,15 +684,24 @@ const sendNotificationToMerchant = async (req, res) => {
       });
     }
 
-    // Here you would typically save the notification to a database
-    // For now, we'll just return success
+    const notification = new Notification({
+      merchant: id,
+      message,
+      type,
+      sentBy: 'Admin'
+    });
+
+    await notification.save();
+
     res.json({
       success: true,
       message: 'Notification sent successfully',
       data: {
+        notificationId: notification._id,
         merchantId: id,
         message: message,
-        timestamp: new Date()
+        type: type,
+        timestamp: notification.createdAt
       }
     });
   } catch (error) {
