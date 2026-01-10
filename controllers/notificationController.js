@@ -1,5 +1,44 @@
 const Notification = require('../models/Notification');
 const Merchant = require('../models/Merchant');
+const Offer = require('../models/Offer');
+const Store = require('../models/Store');
+
+// Get all notifications for new offers
+const getNewOfferNotifications = async (req, res) => {
+  try {
+    // Get recent offers and populate store information
+    const offers = await Offer.find({})
+      .populate('store', 'name category logoUrl')
+      .sort({ createdAt: -1 })
+      .limit(20)
+      .exec();
+
+    // Convert offers to notification-like format
+    const notifications = offers.map(offer => ({
+      id: offer._id.toString(),
+      title: `New Offer from ${offer.store?.name || 'Store'}`,
+      message: `${offer.title} - ${offer.discount}${offer.discountType === 'percentage' ? '%' : ''} off on ${offer.store?.name || 'a store'}. Hurry, limited time!`,
+      type: 'offer',
+      read: false,
+      createdAt: offer.createdAt,
+      createdBy: 'system',
+      offerId: offer._id.toString(),
+      storeId: offer.store?._id.toString()
+    }));
+
+    res.json({
+      success: true,
+      data: notifications
+    });
+  } catch (error) {
+    console.error('Error fetching new offer notifications:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching notifications',
+      error: error.message
+    });
+  }
+};
 
 // Send notification to merchant
 const sendNotificationToMerchant = async (req, res) => {
@@ -282,6 +321,7 @@ const deleteNotification = async (req, res) => {
 };
 
 module.exports = {
+  getNewOfferNotifications,
   sendNotificationToMerchant,
   getMerchantNotifications,
   getMerchantNotificationsByToken,

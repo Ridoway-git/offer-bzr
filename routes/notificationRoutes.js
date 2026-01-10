@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const adminAuthMiddleware = require('../middleware/adminAuth');
 const {
+  getNewOfferNotifications,
   sendNotificationToMerchant,
   getMerchantNotifications,
   markNotificationAsRead,
@@ -20,6 +21,9 @@ router.put('/notifications/:id/read', markNotificationAsRead);
 
 // Mark all notifications as read for a merchant
 router.put('/merchants/:id/notifications/read-all', markAllNotificationsAsRead);
+
+// Get new offer notifications
+router.get('/new-offer-notifications', getNewOfferNotifications);
 
 // Delete notification
 router.delete('/notifications/:id', deleteNotification);
