@@ -721,34 +721,6 @@ const sendNotificationToMerchant = async (req, res) => {
   }
 };
 
-module.exports = {
-  getAllMerchants,
-  getMerchantById,
-  createMerchant,
-  updateMerchant,
-  deleteMerchant,
-  toggleMerchantApproval,
-  getPendingApprovals,
-  approveStore,
-  approveOffer,
-  // New merchant functions
-  getMerchantProfile,
-  updateMerchantProfile,
-  createMerchantStore,
-  getMerchantStore,
-  updateMerchantStore,
-  deleteMerchantStore,
-  getMerchantOffers,
-  createMerchantOffer,
-  updateMerchantOffer,
-  deleteMerchantOffer,
-  toggleMerchantStatus,
-  sendNotificationToMerchant,
-  // Package-related functions
-  getMerchantPackage,
-  getAvailablePackages
-};
-
 // Get merchant's current package
 const getMerchantPackage = async (req, res) => {
   try {
@@ -804,4 +776,32 @@ const getAvailablePackages = async (req, res) => {
       error: error.message
     });
   }
+};
+
+module.exports = {
+  getAllMerchants,
+  getMerchantById,
+  createMerchant,
+  updateMerchant,
+  deleteMerchant,
+  toggleMerchantApproval,
+  getPendingApprovals,
+  approveStore,
+  approveOffer,
+  // New merchant functions
+  getMerchantProfile,
+  updateMerchantProfile,
+  createMerchantStore,
+  getMerchantStore,
+  updateMerchantStore,
+  deleteMerchantStore,
+  getMerchantOffers,
+  createMerchantOffer,
+  updateMerchantOffer,
+  deleteMerchantOffer,
+  toggleMerchantStatus,
+  sendNotificationToMerchant,
+  // Package-related functions
+  getMerchantPackage,
+  getAvailablePackages
 };
