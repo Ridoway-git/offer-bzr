@@ -8,6 +8,8 @@ let admin = null;
 try {
   const firebaseAdmin = require('firebase-admin');
   
+  console.log('Initializing Firebase Admin SDK...');
+  
   // Hardcoded service account configuration
   const serviceAccount = {
     type: 'service_account',
@@ -22,29 +24,39 @@ try {
     client_x509_cert_url: 'https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-ytebf%40sportshuntapp-fd144.iam.gserviceaccount.com',
   };
   
+  console.log('Service account configured for project:', serviceAccount.project_id);
+  
   if (!firebaseAdmin.apps.length) {
     admin = firebaseAdmin.initializeApp({
       credential: firebaseAdmin.credential.cert(serviceAccount),
     });
+    console.log('Firebase Admin SDK initialized successfully');
   } else {
     admin = firebaseAdmin.app();
+    console.log('Using existing Firebase Admin SDK instance');
   }
 } catch (error) {
   console.log('Firebase Admin SDK not initialized:', error.message);
+  console.error('Detailed error:', error);
 }
 
 // Function to send notification about new offer
 const sendNewOfferNotification = async (offer) => {
   try {
+    console.log('Attempting to send new offer notification for offer:', offer._id);
+    
     // Populate store information for the notification
     const store = await Store.findById(offer.store);
+    console.log('Found store for notification:', store?.name);
     
     if (admin) {
+      console.log('Firebase Admin SDK is available, creating notification');
+      
       // Use Firebase Admin SDK if available
       const notificationData = {
         title: `New Offer from ${store?.name || 'Store'}`,
         message: `${offer.title} - ${offer.discount}${offer.discountType === 'percentage' ? '%' : ''} off on ${store?.name || 'a store'}. Hurry, limited time!`,
-        type: 'info',
+        type: 'offer',
         read: false,
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
         createdBy: 'system',
@@ -52,11 +64,15 @@ const sendNewOfferNotification = async (offer) => {
         storeId: offer.store.toString()
       };
       
+      console.log('Notification data prepared:', notificationData);
+      
       const notificationsRef = admin.firestore().collection('notifications');
       await notificationsRef.add(notificationData);
       
       console.log('New offer notification sent successfully:', notificationData.title);
     } else {
+      console.log('Firebase Admin SDK is NOT available');
+      
       // Alternative: Log notification for potential processing by another service
       console.log('New offer notification (not sent due to Firebase Admin unavailability):', {
         title: `New Offer from ${store?.name || 'Store'}`,
@@ -67,6 +83,7 @@ const sendNewOfferNotification = async (offer) => {
     }
   } catch (error) {
     console.error('Error sending new offer notification:', error);
+    console.error('Error details:', error.message, error.code, error.stack);
   }
 };
 
