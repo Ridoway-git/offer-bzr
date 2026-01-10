@@ -25,7 +25,9 @@ const createPayment = async (req, res) => {
       bankName,
       bankAccountNumber,
       paymentProof,
-      commissionId
+      commissionId,
+      package: packageId,
+      packageDurationMonths
     } = req.body;
 
     // Validate required fields
@@ -50,7 +52,7 @@ const createPayment = async (req, res) => {
     }
 
     // Create payment
-    const payment = new Payment({
+    const paymentData = {
       merchant: merchantId,
       amount,
       paymentMethod,
@@ -64,7 +66,15 @@ const createPayment = async (req, res) => {
       paymentProof,
       commissionId: commissionId || commission._id,
       status: 'pending'
-    });
+    };
+
+    // Add package information if provided
+    if (packageId) {
+      paymentData.package = packageId;
+      paymentData.packageDurationMonths = packageDurationMonths;
+    }
+
+    const payment = new Payment(paymentData);
 
     await payment.save();
 
@@ -264,6 +274,26 @@ const approvePayment = async (req, res) => {
       merchant.accessFeePaymentDate = new Date();
       merchant.accessFeePaymentId = payment._id;
       await merchant.save();
+    }
+
+    // Check if this payment is for a package
+    if (payment.package && payment.packageDurationMonths) {
+      const Package = require('../models/Package');
+      const package = await Package.findById(payment.package);
+      
+      if (package) {
+        // Calculate package start and end dates
+        const startDate = new Date();
+        const endDate = new Date(startDate);
+        endDate.setMonth(endDate.getMonth() + payment.packageDurationMonths);
+        
+        // Update merchant with package information
+        merchant.package = payment.package;
+        merchant.packageStartDate = startDate;
+        merchant.packageEndDate = endDate;
+        merchant.packageStatus = 'active';
+        await merchant.save();
+      }
     }
 
     res.json({

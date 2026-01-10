@@ -84,6 +84,22 @@ const merchantSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Payment'
   },
+  // Package-related fields
+  package: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Package'
+  },
+  packageStartDate: {
+    type: Date
+  },
+  packageEndDate: {
+    type: Date
+  },
+  packageStatus: {
+    type: String,
+    enum: ['active', 'expired', 'pending'],
+    default: 'pending'
+  },
   createdAt: {
     type: Date,
     default: Date.now

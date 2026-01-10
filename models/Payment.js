@@ -65,6 +65,14 @@ const paymentSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Commission'
   },
+  // Package-related fields
+  package: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Package'
+  },
+  packageDurationMonths: {
+    type: Number
+  },
   createdAt: {
     type: Date,
     default: Date.now
