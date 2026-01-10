@@ -3,42 +3,31 @@ const Store = require('../models/Store');
 const User = require('../models/User');
 const { validationResult } = require('express-validator');
 
-// Note: For new offer notifications, we recommend setting up Firebase Admin SDK
-// with proper service account credentials. For now, we'll skip direct Firebase integration.
-// The notification system is already in place via the frontend's Firestore integration.
-
-// Initialize Firebase Admin SDK (will remain null if not properly configured)
+// Initialize Firebase Admin SDK with hardcoded credentials
 let admin = null;
 try {
-  // Try to initialize Firebase Admin SDK
   const firebaseAdmin = require('firebase-admin');
   
-  // Check if we have service account credentials
-  if (process.env.FIREBASE_TYPE === 'service_account' && process.env.FIREBASE_PROJECT_ID) {
-    // Initialize with service account details from environment variables
-    const serviceAccount = {
-      type: process.env.FIREBASE_TYPE,
-      project_id: process.env.FIREBASE_PROJECT_ID,
-      private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
-      private_key: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-      client_email: process.env.FIREBASE_CLIENT_EMAIL,
-      client_id: process.env.FIREBASE_CLIENT_ID,
-      auth_uri: process.env.FIREBASE_AUTH_URI,
-      token_uri: process.env.FIREBASE_TOKEN_URI,
-      auth_provider_x509_cert_url: process.env.FIREBASE_AUTH_PROVIDER_X509_CERT_URL,
-      client_x509_cert_url: process.env.FIREBASE_CLIENT_X509_CERT_URL,
-    };
-    
-    // Only initialize if we have the essential credentials
-    if (serviceAccount.private_key && serviceAccount.client_email) {
-      if (!firebaseAdmin.apps.length) {
-        admin = firebaseAdmin.initializeApp({
-          credential: firebaseAdmin.credential.cert(serviceAccount),
-        });
-      } else {
-        admin = firebaseAdmin.app();
-      }
-    }
+  // Hardcoded service account configuration
+  const serviceAccount = {
+    type: 'service_account',
+    project_id: 'sportshuntapp-fd144',
+    private_key_id: '3f18657abf2d7253225e889baa006d0fb2f3d2f1',
+    private_key: '-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDVhCaJLFzMvWRR\nTWC1DaTYbLeKJosy4ojVVKej8fI2ICAEp0kUIJc1AKVB/RPiFW6QOcaWGoSdVWiG\nkfspi53LFgEeCA3AuXzHeDdivBMtLzeCNo9U2ABSKnjhkVOYWAjQ0aZOSp0kQJ9R\n74TU2enxPdLDlc37Sq/+NFf4Ll3dX0xdDfp0685aKk1zbQJbvQFBoIYJ/7MimCZd\ng+43Mv+P/wchkQgUjwxnJW6o9y71TtE7eCyWvTvT4Uk/LbyHc6kRZRV/iLhVKGTW\n+W0greuYdgzi1ONutRTbzsU3bJzk3PlqKI20JVIHro4cr8lbruLJZ2gnuLTELeJ4\nSDTUzyGlAgMBAAECggEAAICqerXMckcWKQUkL48Sx02kXWxPQ/VIelQUCCzNWx6R\njBxVd5bG+UPti/dpRcNQnR6u7WkkfhSgbRe+pZIere4gSp/EdcBBaTUZlTMID3KX\nbdIANku5QRXMbqlYG0z3mKcp/he5t4I+qhJJxBqnrOYfjIo8isaLMZbNG5hVk7ED\nXTsoACF4REqS/sxnWCzI/OAQ1wrHoetX6o5CkOw8MvQqQzBKxCdhVxJEAfrVrbCU\n3yuqMznV/5RqWnf/RTpezoxQLfeko9jNFRCLKkswp1ZAMOJAh392D/as2xRfGyEX\nDsmLw9lolMdY3fQdSxrc4wBOiqDJAujRhdS/PGYWoQKBgQD6PCZxAHdtg9tTFGiO\nfD4s7jtbT7Vh0E14ZU+CMnsLDYui3ZQDJ2ZPSkcx38y34Ptp+RPCwduRHUnjqe/k\nZAkQpW9clC/7vJ6FM2r5+GnKT33ThDVhsosYwuOpTQbMcMn5siCzScZY5ns4KuzY\nti8R8muk8KXXMwO77E5ypChc8QKBgQDab3A/Y5ckJ091sy2S446D9b1VkP0OOwkm\nQS7Lc6f9APwgugl54PsdP7tzE3a6X6dsAsMm7u0J0vHiGvJTdODN6hG/F2ypyMKK\nJTr4DfSQfIHIj1oVEurTgI7dAjXEAaF2w3mAZ8kJioCTrJtHNh8ismj1jZaPL8us\n1zlHyb0f9QKBgD4E+HYban4vJwXRUhS2gGZ8aSO5frgOe5TybyFSx6I2qjwkdNHP\nSxEt1LVsxX1xen6KaDZl+7hcrPqLHNTbYk/I4O/uHnJjDlrvIn1v7zBgQUxSQTTE\nnqr1ap2EZMH41mZXmrk0+L8B6NpD8U3I4aOuFLXdmwzaLPu/lrXdL8/RAoGAPrlP\nTzSG2x/apl6sUIi9jNEM7Dw1Hlf/eZewG0X70B/vRmqFfBUJps19Qz8skboT9mUY\nqt5i/LYxNQ8t1J80SozTSb8tOdfnXQnx0/cV6kOGdRQM9w42lkNNQtN2ovEg71yU\nUDX9OZsm7sDa2ekFqc33a8Obn0RHRTuMPDwG7d0CgYEA5Zo/9wNUjVR2Nv57O5ft\nYaYfGd42LRljx1vYDY6bgvOFlSc0fTt0Nxh7zsHF+Mds+NXR5p7tWolem6bDNPnh\nHPzNSkwx5AF81XcmoOa/qHliEpUE2AMZyY/7tvqNMKrtHQS5O++R0wKcySN3I9V5\n+GBPfX2K54a1GoDM50UOH5g=\n-----END PRIVATE KEY-----\n',
+    client_email: 'firebase-adminsdk-ytebf@sportshuntapp-fd144.iam.gserviceaccount.com',
+    client_id: '109230385975545175055',
+    auth_uri: 'https://accounts.google.com/o/oauth2/auth',
+    token_uri: 'https://oauth2.googleapis.com/token',
+    auth_provider_x509_cert_url: 'https://www.googleapis.com/oauth2/v1/certs',
+    client_x509_cert_url: 'https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-ytebf%40sportshuntapp-fd144.iam.gserviceaccount.com',
+  };
+  
+  if (!firebaseAdmin.apps.length) {
+    admin = firebaseAdmin.initializeApp({
+      credential: firebaseAdmin.credential.cert(serviceAccount),
+    });
+  } else {
+    admin = firebaseAdmin.app();
   }
 } catch (error) {
   console.log('Firebase Admin SDK not initialized:', error.message);
