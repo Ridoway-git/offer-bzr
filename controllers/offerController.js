@@ -3,6 +3,84 @@ const Store = require('../models/Store');
 const User = require('../models/User');
 const { validationResult } = require('express-validator');
 
+// Note: For new offer notifications, we recommend setting up Firebase Admin SDK
+// with proper service account credentials. For now, we'll skip direct Firebase integration.
+// The notification system is already in place via the frontend's Firestore integration.
+
+// Initialize Firebase Admin SDK (will remain null if not properly configured)
+let admin = null;
+try {
+  // Try to initialize Firebase Admin SDK
+  const firebaseAdmin = require('firebase-admin');
+  
+  // Check if we have service account credentials
+  if (process.env.FIREBASE_TYPE === 'service_account' && process.env.FIREBASE_PROJECT_ID) {
+    // Initialize with service account details from environment variables
+    const serviceAccount = {
+      type: process.env.FIREBASE_TYPE,
+      project_id: process.env.FIREBASE_PROJECT_ID,
+      private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
+      private_key: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+      client_email: process.env.FIREBASE_CLIENT_EMAIL,
+      client_id: process.env.FIREBASE_CLIENT_ID,
+      auth_uri: process.env.FIREBASE_AUTH_URI,
+      token_uri: process.env.FIREBASE_TOKEN_URI,
+      auth_provider_x509_cert_url: process.env.FIREBASE_AUTH_PROVIDER_X509_CERT_URL,
+      client_x509_cert_url: process.env.FIREBASE_CLIENT_X509_CERT_URL,
+    };
+    
+    // Only initialize if we have the essential credentials
+    if (serviceAccount.private_key && serviceAccount.client_email) {
+      if (!firebaseAdmin.apps.length) {
+        admin = firebaseAdmin.initializeApp({
+          credential: firebaseAdmin.credential.cert(serviceAccount),
+        });
+      } else {
+        admin = firebaseAdmin.app();
+      }
+    }
+  }
+} catch (error) {
+  console.log('Firebase Admin SDK not initialized:', error.message);
+}
+
+// Function to send notification about new offer
+const sendNewOfferNotification = async (offer) => {
+  try {
+    // Populate store information for the notification
+    const store = await Store.findById(offer.store);
+    
+    if (admin) {
+      // Use Firebase Admin SDK if available
+      const notificationData = {
+        title: `New Offer from ${store?.name || 'Store'}`,
+        message: `${offer.title} - ${offer.discount}${offer.discountType === 'percentage' ? '%' : ''} off on ${store?.name || 'a store'}. Hurry, limited time!`,
+        type: 'info',
+        read: false,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        createdBy: 'system',
+        offerId: offer._id.toString(),
+        storeId: offer.store.toString()
+      };
+      
+      const notificationsRef = admin.firestore().collection('notifications');
+      await notificationsRef.add(notificationData);
+      
+      console.log('New offer notification sent successfully:', notificationData.title);
+    } else {
+      // Alternative: Log notification for potential processing by another service
+      console.log('New offer notification (not sent due to Firebase Admin unavailability):', {
+        title: `New Offer from ${store?.name || 'Store'}`,
+        message: `${offer.title} - ${offer.discount}${offer.discountType === 'percentage' ? '%' : ''} off on ${store?.name || 'a store'}. Hurry, limited time!`,
+        offerId: offer._id.toString(),
+        storeId: offer.store.toString()
+      });
+    }
+  } catch (error) {
+    console.error('Error sending new offer notification:', error);
+  }
+};
+
 // Get all offers
 const getAllOffers = async (req, res) => {
   try {
@@ -163,6 +241,9 @@ const createOffer = async (req, res) => {
     const offer = new Offer(req.body);
     await offer.save();
     await offer.populate('store', 'name category logoUrl');
+
+    // Send notification about new offer
+    await sendNewOfferNotification(offer);
 
     res.status(201).json({
       success: true,
