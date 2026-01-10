@@ -302,11 +302,19 @@ const getMerchantProfile = async (req, res) => {
     const Store = require('../models/Store');
     const store = await Store.findOne({ merchant: merchantId });
 
+    // Get merchant's package information if exists
+    let packageInfo = null;
+    if (merchant.package) {
+      const Package = require('../models/Package');
+      packageInfo = await Package.findById(merchant.package);
+    }
+
     res.json({
       success: true,
       data: {
         ...merchant.toObject(),
-        store: store
+        store: store,
+        packageInfo: packageInfo
       }
     });
   } catch (error) {
@@ -735,5 +743,65 @@ module.exports = {
   updateMerchantOffer,
   deleteMerchantOffer,
   toggleMerchantStatus,
-  sendNotificationToMerchant
+  sendNotificationToMerchant,
+  // Package-related functions
+  getMerchantPackage,
+  getAvailablePackages
+};
+
+// Get merchant's current package
+const getMerchantPackage = async (req, res) => {
+  try {
+    const merchantId = req.user?.id;
+    
+    if (!merchantId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Unauthorized'
+      });
+    }
+
+    const merchant = await Merchant.findById(merchantId).populate('package');
+    
+    if (!merchant) {
+      return res.status(404).json({
+        success: false,
+        message: 'Merchant not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        package: merchant.package,
+        packageStatus: merchant.packageStatus,
+        packageStartDate: merchant.packageStartDate,
+        packageEndDate: merchant.packageEndDate
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching merchant package',
+      error: error.message
+    });
+  }
+};
+
+// Get available packages for merchant
+const getAvailablePackages = async (req, res) => {
+  try {
+    const packages = await Package.find({ isActive: true }).sort({ durationInMonths: 1 });
+    
+    res.json({
+      success: true,
+      data: packages
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching packages',
+      error: error.message
+    });
+  }
 };

@@ -18,6 +18,7 @@ const authRoutes = require('./routes/authRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
+const packageRoutes = require('./routes/packageRoutes');
 
 const app = express();
 
@@ -125,6 +126,7 @@ app.use('/api/offers', offerRoutes);
 app.use('/api/merchants', merchantRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/packages', packageRoutes);
 app.use('/api', notificationRoutes);
 
 // Health check endpoint
