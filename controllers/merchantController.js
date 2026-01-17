@@ -678,7 +678,6 @@ const toggleMerchantStatus = async (req, res) => {
   }
 };
 
-// Send notification to merchant
 const sendNotificationToMerchant = async (req, res) => {
   try {
     const { id } = req.params;
@@ -721,7 +720,6 @@ const sendNotificationToMerchant = async (req, res) => {
   }
 };
 
-// Get merchant's current package
 const getMerchantPackage = async (req, res) => {
   try {
     const merchantId = req.user?.id;

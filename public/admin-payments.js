@@ -104,14 +104,6 @@ function displayPayments(paymentsList) {
             </div>
             
             <div class="payment-actions">
-                ${payment.status === 'pending' ? `
-                    <button class="btn btn-success" onclick="approvePayment('${payment._id}')">
-                        <i class="fas fa-check"></i> Approve
-                    </button>
-                    <button class="btn btn-danger" onclick="rejectPayment('${payment._id}')">
-                        <i class="fas fa-times"></i> Reject
-                    </button>
-                ` : ''}
                 <button class="btn btn-secondary" onclick="viewPaymentDetails('${payment._id}')">
                     <i class="fas fa-eye"></i> View Details
                 </button>
@@ -190,28 +182,39 @@ async function viewPaymentDetails(paymentId) {
         if (data.success) {
             const payment = data.data;
             const details = `
-                <div style="background: white; padding: 2rem; border-radius: 8px; max-width: 600px; margin: 2rem auto;">
+                <div style="background: white; padding: 2rem; border-radius: 8px; max-width: 800px; margin: 2rem auto;">
                     <h3>Payment Details</h3>
                     <div style="margin-top: 1rem;">
-                        <p><strong>Merchant:</strong> ${payment.merchant?.name || 'N/A'}</p>
-                        <p><strong>Email:</strong> ${payment.merchant?.email || 'N/A'}</p>
-                        <p><strong>Amount:</strong> ৳${payment.amount.toFixed(2)}</p>
-                        <p><strong>Method:</strong> ${payment.paymentMethod.replace('_', ' ').toUpperCase()}</p>
-                        <p><strong>Transaction ID:</strong> ${payment.transactionId}</p>
-                        <p><strong>Status:</strong> ${payment.status}</p>
-                        ${payment.senderPhone ? `<p><strong>Sender Phone:</strong> ${payment.senderPhone}</p>` : ''}
-                        ${payment.receiverPhone ? `<p><strong>Receiver Phone:</strong> ${payment.receiverPhone}</p>` : ''}
-                        ${payment.bankName ? `<p><strong>Bank:</strong> ${payment.bankName}</p>` : ''}
-                        ${payment.bankAccountNumber ? `<p><strong>Account:</strong> ${payment.bankAccountNumber}</p>` : ''}
-                        ${payment.paymentProof ? `<p><strong>Proof:</strong> <a href="${payment.paymentProof}" target="_blank">View</a></p>` : ''}
-                        <p><strong>Date:</strong> ${new Date(payment.createdAt).toLocaleString()}</p>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <p><strong>Merchant:</strong> ${payment.merchant?.name || 'N/A'}</p>
+                                <p><strong>Email:</strong> ${payment.merchant?.email || 'N/A'}</p>
+                                <p><strong>Amount:</strong> ৳${payment.amount.toFixed(2)}</p>
+                                <p><strong>Method:</strong> ${payment.paymentMethod.replace('_', ' ').toUpperCase()}</p>
+                                <p><strong>Transaction ID:</strong> ${payment.transactionId}</p>
+                                <p><strong>Status:</strong> ${payment.status}</p>
+                                <p><strong>Date:</strong> ${new Date(payment.createdAt).toLocaleString()}</p>
+                                ${payment.senderPhone ? `<p><strong>Sender Phone:</strong> ${payment.senderPhone}</p>` : ''}
+                                ${payment.receiverPhone ? `<p><strong>Receiver Phone:</strong> ${payment.receiverPhone}</p>` : ''}
+                                ${payment.bankName ? `<p><strong>Bank:</strong> ${payment.bankName}</p>` : ''}
+                                ${payment.bankAccountNumber ? `<p><strong>Account:</strong> ${payment.bankAccountNumber}</p>` : ''}
+                            </div>
+                            <div style="text-align: center;">
+                                ${payment.paymentProof ? `
+                                    <p><strong>Payment Proof:</strong></p>
+                                    <img src="${payment.paymentProof}" alt="Payment Proof" style="max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 4px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                    <div style="display: none; margin-top: 10px;">No image preview available</div>
+                                    <a href="${payment.paymentProof}" target="_blank" style="display: inline-block; margin-top: 10px; padding: 5px 10px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px;">Open Image in New Tab</a>
+                                ` : '<p>No payment proof provided</p>'}
+                            </div>
+                        </div>
                     </div>
-                    <button class="btn btn-secondary" onclick="this.parentElement.parentElement.remove()" style="margin-top: 1rem;">Close</button>
+                    <button class="btn btn-secondary" onclick="this.parentElement.parentElement.parentElement.remove()" style="margin-top: 1rem;">Close</button>
                 </div>
             `;
             
             const modal = document.createElement('div');
-            modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 10000; display: flex; align-items: center; justify-content: center;';
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 10000; display: flex; align-items: center; justify-content: center; overflow-y: auto; padding: 20px;';
             modal.innerHTML = details;
             document.body.appendChild(modal);
         } else {
