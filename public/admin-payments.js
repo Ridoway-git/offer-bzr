@@ -67,11 +67,6 @@ function displayPayments(paymentsList) {
                         <span class="amount-value">৳${payment.amount.toFixed(2)}</span>
                     </div>
                 </div>
-                <div class="payment-status">
-    <span class="status-badge ${payment.status === 'approved' ? 'status-approved' : payment.status === 'rejected' ? 'status-rejected' : 'status-pending'}">
-                    ${payment.status}
-                </span>
-                </div>
             </div>
             
             <div class="payment-details-grid">
