@@ -203,7 +203,6 @@ async function viewPaymentDetails(paymentId) {
                                 <p><strong>Amount:</strong> ৳${payment.amount.toFixed(2)}</p>
                                 <p><strong>Method:</strong> ${payment.paymentMethod.replace('_', ' ').toUpperCase()}</p>
                                 <p><strong>Transaction ID:</strong> ${payment.transactionId}</p>
-                                <p><strong>Status:</strong> ${payment.status}</p>
                                 <p><strong>Date:</strong> ${new Date(payment.createdAt).toLocaleString()}</p>
                                 ${payment.senderPhone ? `<p><strong>Sender Phone:</strong> ${payment.senderPhone}</p>` : ''}
                                 ${payment.receiverPhone ? `<p><strong>Receiver Phone:</strong> ${payment.receiverPhone}</p>` : ''}
@@ -220,7 +219,7 @@ async function viewPaymentDetails(paymentId) {
                             </div>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" onclick="this.parentElement.parentElement.parentElement.remove()" style="margin-top: 1rem;">Close</button>
+                    <button class="btn btn-secondary" onclick="closePaymentDetailsModal(this)" style="margin-top: 1rem;">Close</button>
                 </div>
             `;
             
@@ -234,6 +233,16 @@ async function viewPaymentDetails(paymentId) {
     } catch (error) {
         console.error('Error loading payment details:', error);
         showToast('Error loading payment details', 'error');
+    }
+}
+
+// Close payment details modal
+function closePaymentDetailsModal(buttonElement) {
+    // The modal is the outermost div created in the viewPaymentDetails function
+    // It has the style properties of the modal, so we target the top-level modal div
+    const modal = buttonElement.closest('div[style*="position: fixed"]');
+    if (modal) {
+        modal.remove();
     }
 }
 
