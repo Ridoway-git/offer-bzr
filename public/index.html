@@ -25,9 +25,7 @@
                 <button class="nav-btn" onclick="showSection('merchants')">
                     <i class="fas fa-users"></i> Merchants
                 </button>
-                <button class="nav-btn" onclick="showSection('payments')">
-                    <i class="fas fa-credit-card"></i> Payments
-                </button>
+                
                 <button class="nav-btn" onclick="showSection('packages')">
                     <i class="fas fa-box-open"></i> Packages
                 </button>
@@ -321,37 +319,7 @@
             </div>
         </section>
 
-        <!-- Payments Section -->
-        <section id="payments" class="section">
-            <div class="section-header">
-                <h2><i class="fas fa-credit-card"></i> Payment Management</h2>
-            </div>
 
-            <!-- Set Access Fee Form -->
-            <div class="form-container" style="margin-bottom: 2rem;">
-                <h3>Set Access Fee</h3>
-                <form id="accessFeeForm">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="feeMerchantSelect">Select Merchant</label>
-                            <select id="feeMerchantSelect" name="merchantId" required>
-                                <option value="">Select Merchant</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="accessFeeAmount">Access Fee (৳)</label>
-                            <input type="number" id="accessFeeAmount" name="accessFee" placeholder="0.00" min="0" step="0.01" required>
-                        </div>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Set Fee</button>
-                    </div>
-                </form>
-            </div>
-
-
-        </section>
 
         <!-- Packages Section -->
         <section id="packages" class="section">
