@@ -107,6 +107,9 @@ function displayPayments(paymentsList) {
                 <button class="btn btn-secondary" onclick="viewPaymentDetails('${payment._id}')">
                     <i class="fas fa-eye"></i> View Details
                 </button>
+                <button class="btn btn-danger" onclick="deletePayment('${payment._id}')" style="margin-left: 5px;">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
             </div>
         </div>
     `).join('');
@@ -172,7 +175,7 @@ async function viewPaymentDetails(paymentId) {
     try {
         const response = await fetch(`${API_BASE_URL}/admin/payments/${paymentId}`, {
             headers: {
-                'Authorization': 'Bearer admin-token',
+                'Authorization': `Bearer ${localStorage.getItem('adminToken') || 'admin-token'}`,
                 'Content-Type': 'application/json'
             }
         });
@@ -223,6 +226,33 @@ async function viewPaymentDetails(paymentId) {
     } catch (error) {
         console.error('Error loading payment details:', error);
         showToast('Error loading payment details', 'error');
+    }
+}
+
+// Delete payment
+async function deletePayment(paymentId) {
+    if (!confirm('Are you sure you want to delete this payment? This action cannot be undone.')) return;
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}/admin/payments/${paymentId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('adminToken') || 'admin-token'}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showToast('Payment deleted successfully!', 'success');
+            loadPayments();
+        } else {
+            showToast(data.message || 'Error deleting payment', 'error');
+        }
+    } catch (error) {
+        console.error('Error deleting payment:', error);
+        showToast('Error deleting payment', 'error');
     }
 }
 
