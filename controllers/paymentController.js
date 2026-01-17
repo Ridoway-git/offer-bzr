@@ -420,7 +420,7 @@ const getPaymentById = async (req, res) => {
     }
 
     // Check if merchant is authorized to view this payment
-    if (payment.merchant._id.toString() !== merchantId && !req.user?.isAdmin) {
+    if (payment.merchant._id.toString() !== merchantId && req.user?.role !== 'admin') {
       return res.status(403).json({
         success: false,
         message: 'Unauthorized to view this payment'
