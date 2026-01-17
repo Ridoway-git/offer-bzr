@@ -22,9 +22,9 @@ document.addEventListener('DOMContentLoaded', function() {
 // Load all payments
 async function loadPayments() {
     try {
-        const response = await fetch(`${API_BASE_URL}/admin/payments/all`, {
+        const response = await fetch(`${API_BASE_URL}/payments/all`, {
             headers: {
-                'Authorization': 'Bearer admin-token',
+                'Authorization': `Bearer ${localStorage.getItem('adminToken') || 'admin-token'}`,
                 'Content-Type': 'application/json'
             }
         });
@@ -123,10 +123,10 @@ async function approvePayment(paymentId) {
     if (!confirm('Approve this payment?')) return;
 
     try {
-        const response = await fetch(`${API_BASE_URL}/admin/payments/${paymentId}/approve`, {
+        const response = await fetch(`${API_BASE_URL}/payments/${paymentId}/approve`, {
             method: 'PATCH',
             headers: {
-                'Authorization': 'Bearer admin-token',
+                'Authorization': `Bearer ${localStorage.getItem('adminToken') || 'admin-token'}`,
                 'Content-Type': 'application/json'
             }
         });
@@ -151,10 +151,10 @@ async function rejectPayment(paymentId) {
     if (!confirm('Reject this payment?')) return;
 
     try {
-        const response = await fetch(`${API_BASE_URL}/admin/payments/${paymentId}/reject`, {
+        const response = await fetch(`${API_BASE_URL}/payments/${paymentId}/reject`, {
             method: 'PATCH',
             headers: {
-                'Authorization': 'Bearer admin-token',
+                'Authorization': `Bearer ${localStorage.getItem('adminToken') || 'admin-token'}`,
                 'Content-Type': 'application/json'
             }
         });
@@ -176,7 +176,7 @@ async function rejectPayment(paymentId) {
 // View payment details
 async function viewPaymentDetails(paymentId) {
     try {
-        const response = await fetch(`${API_BASE_URL}/admin/payments/${paymentId}`, {
+        const response = await fetch(`${API_BASE_URL}/payments/${paymentId}`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('adminToken') || 'admin-token'}`,
                 'Content-Type': 'application/json'
@@ -242,7 +242,7 @@ async function deletePayment(paymentId) {
     if (!confirm('Are you sure you want to delete this payment? This action cannot be undone.')) return;
     
     try {
-        const response = await fetch(`${API_BASE_URL}/admin/payments/${paymentId}`, {
+        const response = await fetch(`${API_BASE_URL}/payments/${paymentId}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('adminToken') || 'admin-token'}`,
