@@ -3,7 +3,7 @@ const Merchant = require('../models/Merchant');
 const Offer = require('../models/Offer');
 const Store = require('../models/Store');
 
-// Get all notifications for new offers
+// Get all notifications for new offers and stores
 const getNewOfferNotifications = async (req, res) => {
   try {
     // Get recent offer notifications from the notification collection
@@ -11,7 +11,7 @@ const getNewOfferNotifications = async (req, res) => {
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
     
     const notifications = await Notification.find({
-      type: 'offer',
+      type: { $in: ['offer', 'store'] }, // Include both offer and store notifications
       createdAt: { $gte: sevenDaysAgo }
     })
       .populate('offerId', 'title discount discountType isActive expiryDate')
@@ -21,17 +21,27 @@ const getNewOfferNotifications = async (req, res) => {
       .exec();
 
     // Format the notifications for the response
-    const formattedNotifications = notifications.map(notification => ({
-      id: notification._id.toString(),
-      title: `New Offer from ${notification.storeId?.name || 'Store'}`,
-      message: notification.message,
-      type: notification.type,
-      read: notification.isRead,
-      createdAt: notification.createdAt,
-      createdBy: notification.sentBy,
-      offerId: notification.offerId?._id.toString(),
-      storeId: notification.storeId?._id.toString()
-    }));
+    const formattedNotifications = notifications.map(notification => {
+      // Determine the title based on notification type
+      let title = '';
+      if (notification.type === 'store') {
+        title = `New Store Added: ${notification.storeId?.name || 'Store'}`;
+      } else {
+        title = `New Offer from ${notification.storeId?.name || 'Store'}`;
+      }
+      
+      return {
+        id: notification._id.toString(),
+        title: title,
+        message: notification.message,
+        type: notification.type,
+        read: notification.isRead,
+        createdAt: notification.createdAt,
+        createdBy: notification.sentBy,
+        offerId: notification.offerId?._id.toString(),
+        storeId: notification.storeId?._id.toString()
+      };
+    });
 
     res.json({
       success: true,

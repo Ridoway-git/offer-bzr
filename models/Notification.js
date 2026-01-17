@@ -23,7 +23,7 @@ const notificationSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['info', 'warning', 'success', 'error', 'offer'],
+    enum: ['info', 'warning', 'success', 'error', 'offer', 'store'],
     default: 'info'
   },
   isRead: {
@@ -49,5 +49,6 @@ notificationSchema.index({ isRead: 1 });
 notificationSchema.index({ type: 1, createdAt: -1 });
 notificationSchema.index({ offerId: 1, createdAt: -1 });
 notificationSchema.index({ storeId: 1, createdAt: -1 });
+notificationSchema.index({ type: 1 }); // Additional index for type filtering
 
 module.exports = mongoose.model('Notification', notificationSchema);

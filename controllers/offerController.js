@@ -83,9 +83,17 @@ const sendNewOfferNotification = async (offer) => {
       const notificationsRef = admin.firestore().collection('notifications');
       await notificationsRef.add(notificationData);
       
-      console.log('New offer notification sent successfully to Firestore:', notificationData.title);
+      console.log('New offer notification sent successfully:', notificationData.title);
     } else {
       console.log('Firebase Admin SDK is NOT available');
+      
+      // Alternative: Log notification for potential processing by another service
+      console.log('New offer notification (not sent due to Firebase Admin unavailability):', {
+        title: `New Offer from ${store?.name || 'Store'}`,
+        message: `${offer.title} - ${offer.discount}${offer.discountType === 'percentage' ? '%' : ''} off on ${store?.name || 'a store'}. Hurry, limited time!`,
+        offerId: offer._id.toString(),
+        storeId: offer.store.toString()
+      });
     }
   } catch (error) {
     console.error('Error sending new offer notification:', error);
