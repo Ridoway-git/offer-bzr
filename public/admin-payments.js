@@ -183,6 +183,11 @@ async function viewPaymentDetails(paymentId) {
             }
         });
 
+        if (response.status === 404) {
+            showToast('Payment not found. It may have been deleted.', 'error');
+            return;
+        }
+        
         const data = await response.json();
 
         if (data.success) {
