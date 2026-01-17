@@ -6,29 +6,36 @@ const Store = require('../models/Store');
 // Get all notifications for new offers
 const getNewOfferNotifications = async (req, res) => {
   try {
-    // Get recent offers and populate store information
-    const offers = await Offer.find({})
-      .populate('store', 'name category logoUrl')
+    // Get recent offer notifications from the notification collection
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    
+    const notifications = await Notification.find({
+      type: 'offer',
+      createdAt: { $gte: sevenDaysAgo }
+    })
+      .populate('offerId', 'title discount discountType isActive expiryDate')
+      .populate('storeId', 'name category logoUrl')
       .sort({ createdAt: -1 })
       .limit(20)
       .exec();
 
-    // Convert offers to notification-like format
-    const notifications = offers.map(offer => ({
-      id: offer._id.toString(),
-      title: `New Offer from ${offer.store?.name || 'Store'}`,
-      message: `${offer.title} - ${offer.discount}${offer.discountType === 'percentage' ? '%' : ''} off on ${offer.store?.name || 'a store'}. Hurry, limited time!`,
-      type: 'offer',
-      read: false,
-      createdAt: offer.createdAt,
-      createdBy: 'system',
-      offerId: offer._id.toString(),
-      storeId: offer.store?._id.toString()
+    // Format the notifications for the response
+    const formattedNotifications = notifications.map(notification => ({
+      id: notification._id.toString(),
+      title: `New Offer from ${notification.storeId?.name || 'Store'}`,
+      message: notification.message,
+      type: notification.type,
+      read: notification.isRead,
+      createdAt: notification.createdAt,
+      createdBy: notification.sentBy,
+      offerId: notification.offerId?._id.toString(),
+      storeId: notification.storeId?._id.toString()
     }));
 
     res.json({
       success: true,
-      data: notifications
+      data: formattedNotifications
     });
   } catch (error) {
     console.error('Error fetching new offer notifications:', error);
