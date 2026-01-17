@@ -26,6 +26,10 @@
                     <i class="fas fa-users"></i> Merchants
                 </button>
                 
+                <button class="nav-btn" onclick="showSection('payments')">
+                    <i class="fas fa-money-bill-wave"></i> Payments
+                </button>
+                
                 <button class="nav-btn" onclick="showSection('packages')">
                     <i class="fas fa-box-open"></i> Packages
                 </button>
@@ -378,63 +382,7 @@
             </div>
         </section>
 
-       <!-- Packages Section -->
-       <section id="packages" class="section">
-           <div class="section-header">
-               <h2><i class="fas fa-box-open"></i> Package Management</h2>
-               <div class="header-actions">
-                   <button class="btn btn-primary" onclick="showCreatePackageForm()">
-                       <i class="fas fa-plus"></i> Create New Package
-                   </button>
-               </div>
-           </div>
-       
-           <!-- Create Package Form -->
-           <div id="createPackageForm" class="form-container" style="display: none;">
-               <h3>Create New Package</h3>
-               <form id="packageForm">
-                   <div class="form-row">
-                       <div class="form-group">
-                           <label for="packageName">Package Name *</label>
-                           <input type="text" id="packageName" name="name" placeholder="e.g., Monthly Package" required>
-                       </div>
-                       <div class="form-group">
-                           <label for="packageDuration">Duration (Months) *</label>
-                           <input type="number" id="packageDuration" name="durationInMonths" placeholder="e.g., 1" min="1" required>
-                       </div>
-                   </div>
-                           
-                   <div class="form-group">
-                       <label for="packagePrice">Price (BDT) *</label>
-                       <input type="number" id="packagePrice" name="price" placeholder="e.g., 1000" min="0" step="0.01" required>
-                   </div>
-                           
-                   <div class="form-group">
-                       <label for="packageDescription">Description</label>
-                       <textarea id="packageDescription" name="description" placeholder="Describe the package..." rows="3"></textarea>
-                   </div>
-                           
-                   <div class="form-group checkbox-group">
-                       <label class="checkbox-label">
-                           <input type="checkbox" id="packageActive" name="isActive" checked>
-                           <span class="checkmark"></span>
-                           Package is active
-                       </label>
-                   </div>
-                           
-                   <div class="form-actions">
-                       <button type="button" class="btn btn-secondary" onclick="hideCreatePackageForm()">Cancel</button>
-                       <button type="submit" class="btn btn-primary">Create Package</button>
-                   </div>
-               </form>
-           </div>
-       
-           <!-- Packages List -->
-           <div class="packages-list" id="packagesList">
-               <div class="loading">Loading packages...</div>
-           </div>
-       </section>
-       
+
        <!-- Notifications Section -->
        <section id="notifications" class="section">
             <div class="section-header">
@@ -478,6 +426,24 @@
             
             
 
+        </section>
+
+        <!-- Payments Section -->
+        <section id="payments" class="section">
+            <div class="section-header">
+                <h2><i class="fas fa-money-bill-wave"></i> Payment Management</h2>
+                <div class="header-actions">
+                    <div class="search-box">
+                        <input type="text" id="paymentSearch" placeholder="Search payments..." onkeyup="searchPayments()">
+                        <i class="fas fa-search"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payments List -->
+            <div class="payments-list" id="paymentsList">
+                <div class="loading">Loading payments...</div>
+            </div>
         </section>
 
     </div>
