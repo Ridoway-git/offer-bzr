@@ -11,7 +11,10 @@ document.addEventListener('DOMContentLoaded', function() {
         if (sectionName === 'payments') {
             loadPayments();
             loadMerchantsWithPaymentStatus();
-            loadMerchantsForFeeForm();
+            // Only call loadMerchantsForFeeForm if the required elements exist
+            if (document.getElementById('feeMerchantSelect')) {
+                loadMerchantsForFeeForm();
+            }
         }
     };
 });
@@ -297,14 +300,16 @@ async function loadMerchantsForFeeForm() {
 
         if (data.success) {
             const select = document.getElementById('feeMerchantSelect');
-            select.innerHTML = '<option value="">Select Merchant</option>';
-            
-            data.data.forEach(merchant => {
-                const option = document.createElement('option');
-                option.value = merchant._id;
-                option.textContent = `${merchant.name} (${merchant.email})`;
-                select.appendChild(option);
-            });
+            if (select) {  // Check if element exists before modifying
+                select.innerHTML = '<option value="">Select Merchant</option>';
+                
+                data.data.forEach(merchant => {
+                    const option = document.createElement('option');
+                    option.value = merchant._id;
+                    option.textContent = `${merchant.name} (${merchant.email})`;
+                    select.appendChild(option);
+                });
+            }
         }
     } catch (error) {
         console.error('Error loading merchants for fee form:', error);
@@ -312,38 +317,41 @@ async function loadMerchantsForFeeForm() {
 }
 
 // Set access fee form submission
-document.getElementById('accessFeeForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
+const accessFeeForm = document.getElementById('accessFeeForm');
+if (accessFeeForm) {  // Only attach event listener if form exists
+    accessFeeForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const merchantId = formData.get('merchantId');
+        const accessFee = parseFloat(formData.get('accessFee'));
     
-    const formData = new FormData(this);
-    const merchantId = formData.get('merchantId');
-    const accessFee = parseFloat(formData.get('accessFee'));
-
-    try {
-        const response = await fetch(`${API_BASE_URL}/admin/merchants/${merchantId}/set-access-fee`, {
-            method: 'POST',
-            headers: {
-                'Authorization': 'Bearer admin-token',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ accessFee })
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            showToast('Access fee set successfully!', 'success');
-            this.reset();
-            loadMerchantsWithPaymentStatus();
-            loadMerchants();
-        } else {
-            showToast(data.message || 'Error setting access fee', 'error');
+        try {
+            const response = await fetch(`${API_BASE_URL}/admin/merchants/${merchantId}/set-access-fee`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer admin-token',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ accessFee })
+            });
+    
+            const data = await response.json();
+    
+            if (data.success) {
+                showToast('Access fee set successfully!', 'success');
+                this.reset();
+                loadMerchantsWithPaymentStatus();
+                loadMerchants();
+            } else {
+                showToast(data.message || 'Error setting access fee', 'error');
+            }
+        } catch (error) {
+            console.error('Error setting access fee:', error);
+            showToast('Error setting access fee', 'error');
         }
-    } catch (error) {
-        console.error('Error setting access fee:', error);
-        showToast('Error setting access fee', 'error');
-    }
-});
+    });
+}
 
 // Mark access fee as paid
 async function markAccessFeePaid(merchantId) {
