@@ -51,7 +51,7 @@ const getMerchantsWithPaymentStatus = async (req, res) => {
   try {
     const merchants = await Merchant.find()
       .sort({ createdAt: -1 })
-      .select('name email businessName phone accessFee accessFeePaid accessFeePaymentDate approvalStatus isActive createdAt');
+      .select('name email businessName phone address accessFee accessFeePaid accessFeePaymentDate approvalStatus isActive createdAt');
 
     // Get payment status for each merchant
     const merchantsWithStatus = await Promise.all(

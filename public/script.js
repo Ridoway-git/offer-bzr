@@ -713,7 +713,12 @@ function displayMerchants() {
                     </div>
                     <div class="merchant-details">
                         <div class="merchant-name">${merchant.name}</div>
-                        <div class="merchant-business">${merchant.businessName || merchant.businessType || 'Business Info Not Provided'}</div>
+                        <div class="merchant-business">${merchant.businessName || 'Business Name Not Provided'}</div>
+                        ${merchant.businessType ? `
+                        <div class="merchant-type">
+                            <span class="detail-label">Business Type:</span>
+                            <span class="detail-text">${merchant.businessType}</span>
+                        </div>` : ''}
                     </div>
                 </div>
 
@@ -765,9 +770,7 @@ function displayMerchants() {
             </div>
             
             <div class="merchant-actions">
-                <button class="btn btn-secondary" onclick="editMerchant('${merchant._id}')">
-                    <i class="fas fa-edit"></i> Edit
-                </button>
+
                 <button class="btn ${merchant.isApproved ? 'btn-warning' : 'btn-success'}" 
                         onclick="toggleMerchantApproval('${merchant._id}', ${merchant.isApproved})">
                     <i class="fas fa-${merchant.isApproved ? 'times' : 'check'}"></i>
@@ -891,7 +894,12 @@ async function searchMerchants() {
                     </div>
                     <div class="merchant-details">
                         <div class="merchant-name">${merchant.name}</div>
-                        <div class="merchant-business">${merchant.businessName || merchant.businessType || 'Business Info Not Provided'}</div>
+                        <div class="merchant-business">${merchant.businessName || 'Business Name Not Provided'}</div>
+                        ${merchant.businessType ? `
+                        <div class="merchant-type">
+                            <span class="detail-label">Business Type:</span>
+                            <span class="detail-text">${merchant.businessType}</span>
+                        </div>` : ''}
                     </div>
                 </div>
 
@@ -942,9 +950,7 @@ async function searchMerchants() {
             </div>
             
             <div class="merchant-actions">
-                <button class="btn btn-secondary" onclick="editMerchant('${merchant._id}')">
-                    <i class="fas fa-edit"></i> Edit
-                </button>
+
                 <button class="btn ${merchant.isApproved ? 'btn-warning' : 'btn-success'}" 
                         onclick="toggleMerchantApproval('${merchant._id}', ${merchant.isApproved})">
                     <i class="fas fa-${merchant.isApproved ? 'times' : 'check'}"></i>
