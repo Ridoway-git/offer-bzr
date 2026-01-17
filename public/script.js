@@ -724,11 +724,7 @@ function displayMerchants() {
                     <span class="status-badge ${merchant.isActive ? 'status-active' : 'status-inactive'}">
                         ${merchant.isActive ? 'Active' : 'Inactive'}
                     </span>
-                    ${merchant.accessFee !== undefined ? `
-                        <span class="status-badge ${merchant.accessFeePaid ? 'status-approved' : 'status-pending'}">
-                            Fee: ৳${(merchant.accessFee || 0).toFixed(2)} - ${merchant.accessFeePaid ? 'Paid' : 'Pending'}
-                        </span>
-                    ` : ''}
+
                 </div>
             </div>
             
