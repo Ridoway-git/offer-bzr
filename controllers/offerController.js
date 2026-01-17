@@ -49,20 +49,6 @@ const sendNewOfferNotification = async (offer) => {
     const store = await Store.findById(offer.store);
     console.log('Found store for notification:', store?.name);
     
-    // Create a general notification record in the database
-    const Notification = require('../models/Notification');
-    
-    const notification = new Notification({
-      offerId: offer._id,
-      storeId: offer.store,
-      message: `${offer.title} - ${offer.discount}${offer.discountType === 'percentage' ? '%' : ''} off on ${store?.name || 'a store'}. Hurry, limited time!`,
-      type: 'offer',
-      sentBy: 'system'
-    });
-    
-    await notification.save();
-    console.log('New offer notification saved to database:', notification._id);
-    
     if (admin) {
       console.log('Firebase Admin SDK is available, creating notification');
       

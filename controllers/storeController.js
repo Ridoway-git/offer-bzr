@@ -117,21 +117,6 @@ const createStore = async (req, res) => {
     const store = new Store(req.body);
     await store.save();
 
-    // Send notification about the new store
-    // Import here to avoid circular dependencies
-    const Notification = require('../models/Notification');
-    
-    // Create a general notification record in the database
-    const notification = new Notification({
-      storeId: store._id,
-      message: `New store added: ${store.name}. Check out our latest addition to the platform!`,
-      type: 'offer', // Using 'offer' type for store notifications too since it's for the same audience
-      sentBy: 'system'
-    });
-    
-    await notification.save();
-    console.log('New store notification saved to database:', notification._id);
-
     res.status(201).json({
       success: true,
       message: 'Store created successfully',

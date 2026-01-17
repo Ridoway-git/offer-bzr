@@ -3,49 +3,32 @@ const Merchant = require('../models/Merchant');
 const Offer = require('../models/Offer');
 const Store = require('../models/Store');
 
-// Get all notifications for new offers and stores
+// Get all notifications for new offers
 const getNewOfferNotifications = async (req, res) => {
   try {
-    // Get recent offer notifications from the notification collection
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-    
-    const notifications = await Notification.find({
-      type: { $in: ['offer', 'store'] }, // Include both offer and store notifications
-      createdAt: { $gte: sevenDaysAgo }
-    })
-      .populate('offerId', 'title discount discountType isActive expiryDate')
-      .populate('storeId', 'name category logoUrl')
+    // Get recent offers and populate store information
+    const offers = await Offer.find({})
+      .populate('store', 'name category logoUrl')
       .sort({ createdAt: -1 })
       .limit(20)
       .exec();
 
-    // Format the notifications for the response
-    const formattedNotifications = notifications.map(notification => {
-      // Determine the title based on notification type
-      let title = '';
-      if (notification.type === 'store') {
-        title = `New Store Added: ${notification.storeId?.name || 'Store'}`;
-      } else {
-        title = `New Offer from ${notification.storeId?.name || 'Store'}`;
-      }
-      
-      return {
-        id: notification._id.toString(),
-        title: title,
-        message: notification.message,
-        type: notification.type,
-        read: notification.isRead,
-        createdAt: notification.createdAt,
-        createdBy: notification.sentBy,
-        offerId: notification.offerId?._id.toString(),
-        storeId: notification.storeId?._id.toString()
-      };
-    });
+    // Convert offers to notification-like format
+    const notifications = offers.map(offer => ({
+      id: offer._id.toString(),
+      title: `New Offer from ${offer.store?.name || 'Store'}`,
+      message: `${offer.title} - ${offer.discount}${offer.discountType === 'percentage' ? '%' : ''} off on ${offer.store?.name || 'a store'}. Hurry, limited time!`,
+      type: 'offer',
+      read: false,
+      createdAt: offer.createdAt,
+      createdBy: 'system',
+      offerId: offer._id.toString(),
+      storeId: offer.store?._id.toString()
+    }));
 
     res.json({
       success: true,
-      data: formattedNotifications
+      data: notifications
     });
   } catch (error) {
     console.error('Error fetching new offer notifications:', error);
