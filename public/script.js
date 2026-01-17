@@ -713,8 +713,7 @@ function displayMerchants() {
                     </div>
                     <div class="merchant-details">
                         <div class="merchant-name">${merchant.name}</div>
-                        <div class="merchant-business">${merchant.businessName || 'N/A'} - ${merchant.businessType || 'N/A'}</div>
-                        <div class="merchant-id">ID: ${merchant._id}</div>
+                        <div class="merchant-business">${merchant.businessName || merchant.businessType || 'Business Info Not Provided'}</div>
                     </div>
                 </div>
 
@@ -892,8 +891,7 @@ async function searchMerchants() {
                     </div>
                     <div class="merchant-details">
                         <div class="merchant-name">${merchant.name}</div>
-                        <div class="merchant-business">${merchant.businessName || 'N/A'} - ${merchant.businessType || 'N/A'}</div>
-                        <div class="merchant-id">ID: ${merchant._id}</div>
+                        <div class="merchant-business">${merchant.businessName || merchant.businessType || 'Business Info Not Provided'}</div>
                     </div>
                 </div>
 
