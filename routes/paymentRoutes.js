@@ -12,7 +12,8 @@ const {
   approvePayment,
   rejectPayment,
   addCommission,
-  getPaymentById
+  getPaymentById,
+  deletePayment
 } = require('../controllers/paymentController');
 
 const router = express.Router();
@@ -80,6 +81,7 @@ router.get('/merchant/:id', authMiddleware, getPaymentById);
 router.get('/pending', adminAuthMiddleware, getPendingPayments);
 router.get('/all', adminAuthMiddleware, getAllPayments);
 router.get('/:id', adminAuthMiddleware, getPaymentById);
+router.delete('/:id', adminAuthMiddleware, deletePayment);
 router.patch('/:id/approve', adminAuthMiddleware, approvePayment);
 router.patch('/:id/reject', adminAuthMiddleware, rejectPayment);
 router.post('/commission/add', adminAuthMiddleware, addCommission);

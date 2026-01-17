@@ -250,6 +250,12 @@ async function deletePayment(paymentId) {
             }
         });
         
+        if (response.status === 404) {
+            showToast('Payment not found. It may have already been deleted.', 'error');
+            loadPayments(); // Refresh the list to reflect current state
+            return;
+        }
+        
         const data = await response.json();
         
         if (data.success) {

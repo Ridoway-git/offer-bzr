@@ -440,6 +440,36 @@ const getPaymentById = async (req, res) => {
   }
 };
 
+// Admin: Delete payment
+const deletePayment = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const payment = await Payment.findById(id);
+    
+    if (!payment) {
+      return res.status(404).json({
+        success: false,
+        message: 'Payment not found'
+      });
+    }
+
+    // Delete the payment
+    await Payment.findByIdAndDelete(id);
+    
+    res.json({
+      success: true,
+      message: 'Payment deleted successfully'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error deleting payment',
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   createPayment,
   getMerchantPayments,
@@ -449,6 +479,7 @@ module.exports = {
   approvePayment,
   rejectPayment,
   addCommission,
-  getPaymentById
+  getPaymentById,
+  deletePayment
 };
 
