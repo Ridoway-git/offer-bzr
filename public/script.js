@@ -772,7 +772,7 @@ function displayMerchants() {
             <div class="merchant-actions">
 
                 <button class="btn ${merchant.isApproved ? 'btn-warning' : 'btn-success'}" 
-                        onclick="toggleMerchantApproval('${merchant._id}', ${merchant.isApproved})">
+                        onclick="toggleMerchantApproval('${merchant._id}', ${!!merchant.isApproved})">
                     <i class="fas fa-${merchant.isApproved ? 'times' : 'check'}"></i>
                     ${merchant.isApproved ? 'Disapprove' : 'Approve'}
                 </button>
@@ -952,7 +952,7 @@ async function searchMerchants() {
             <div class="merchant-actions">
 
                 <button class="btn ${merchant.isApproved ? 'btn-warning' : 'btn-success'}" 
-                        onclick="toggleMerchantApproval('${merchant._id}', ${merchant.isApproved})">
+                        onclick="toggleMerchantApproval('${merchant._id}', ${!!merchant.isApproved})">
                     <i class="fas fa-${merchant.isApproved ? 'times' : 'check'}"></i>
                     ${merchant.isApproved ? 'Disapprove' : 'Approve'}
                 </button>
@@ -973,6 +973,9 @@ async function searchMerchants() {
 }
 
 async function toggleMerchantApproval(merchantId, currentStatus) {
+    // Convert currentStatus to proper boolean if it's undefined
+    const isCurrentlyApproved = !!currentStatus;
+    
     try {
         const response = await fetch(`${API_BASE_URL}/admin/merchants/${merchantId}/toggle-approval`, {
             method: 'PATCH',
@@ -984,15 +987,17 @@ async function toggleMerchantApproval(merchantId, currentStatus) {
         
         const data = await response.json();
         
-        if (data.success) {
-            showToast(data.message, 'success');
+        if (response.ok && data.success) {
+            const newStatus = !isCurrentlyApproved;
+            const action = newStatus ? 'approved' : 'disapproved';
+            showToast(`Merchant ${action} successfully!`, 'success');
             loadMerchants();
         } else {
-            showToast(data.message || 'Error toggling merchant approval', 'error');
+            showToast(data.message || `Error ${isCurrentlyApproved ? 'disapproving' : 'approving'} merchant`, 'error');
         }
     } catch (error) {
         console.error('Error toggling merchant approval:', error);
-        showToast('Error toggling merchant approval', 'error');
+        showToast(`Error ${isCurrentlyApproved ? 'disapproving' : 'approving'} merchant`, 'error');
     }
 }
 
