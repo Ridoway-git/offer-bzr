@@ -717,15 +717,7 @@ function displayMerchants() {
                         <div class="merchant-id">ID: ${merchant._id}</div>
                     </div>
                 </div>
-                <div class="merchant-status">
-                    <span class="status-badge ${merchant.isApproved ? 'status-approved' : 'status-pending'}">
-                        ${merchant.isApproved ? 'Approved' : 'Pending'}
-                    </span>
-                    <span class="status-badge ${merchant.isActive ? 'status-active' : 'status-inactive'}">
-                        ${merchant.isActive ? 'Active' : 'Inactive'}
-                    </span>
 
-                </div>
             </div>
             
             <div class="merchant-details-grid">
@@ -904,14 +896,7 @@ async function searchMerchants() {
                         <div class="merchant-id">ID: ${merchant._id}</div>
                     </div>
                 </div>
-                <div class="merchant-status">
-                    <span class="status-badge ${merchant.isApproved ? 'status-approved' : 'status-pending'}">
-                        ${merchant.isApproved ? 'Approved' : 'Pending'}
-                    </span>
-                    <span class="status-badge ${merchant.isActive ? 'status-active' : 'status-inactive'}">
-                        ${merchant.isActive ? 'Active' : 'Inactive'}
-                    </span>
-                </div>
+
             </div>
             
             <div class="merchant-details-grid">
