@@ -733,17 +733,7 @@ function displayMerchants() {
             </div>
             
             <div class="merchant-details-grid">
-                ${merchant.accessFee !== undefined ? `
-                    <div class="detail-item">
-                        <div class="detail-icon">
-                            <i class="fas fa-dollar-sign"></i>
-                        </div>
-                        <div class="detail-content">
-                            <span class="detail-label">Access Fee</span>
-                            <span class="detail-text">৳${(merchant.accessFee || 0).toFixed(2)} ${merchant.accessFeePaid ? '(Paid)' : '(Pending)'}</span>
-                        </div>
-                    </div>
-                ` : ''}
+
                 <div class="detail-item">
                     <div class="detail-icon">
                         <i class="fas fa-envelope"></i>
