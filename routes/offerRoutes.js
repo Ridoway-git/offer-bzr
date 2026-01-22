@@ -19,7 +19,6 @@ const {
 
 const router = express.Router();
 
-// Validation middleware for offer creation/update
 const offerValidation = [
   body('title')
     .notEmpty()
@@ -106,7 +105,6 @@ const offerValidation = [
     .withMessage('isActive must be a boolean value')
 ];
 
-// Routes
 router.get('/', getAllOffers);
 router.get('/featured', getFeaturedOffers);
 router.get('/favorites', getFavorites);

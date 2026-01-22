@@ -12,7 +12,6 @@ const {
 
 const router = express.Router();
 
-// Package validation middleware
 const packageValidation = [
   body('name')
     .notEmpty()
@@ -32,12 +31,10 @@ const packageValidation = [
     .withMessage('Price must be a non-negative number')
 ];
 
-// Public routes - anyone can view packages
 router.get('/', getAllPackages);
 router.get('/active', getActivePackages);
 router.get('/:id', getPackageById);
 
-// Admin routes - only admins can manage packages
 router.post('/', adminAuthMiddleware, packageValidation, createPackage);
 router.put('/:id', adminAuthMiddleware, packageValidation, updatePackage);
 router.delete('/:id', adminAuthMiddleware, deletePackage);

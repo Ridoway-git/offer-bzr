@@ -29,7 +29,6 @@ const {
 
 const router = express.Router();
 
-// Configure multer for file uploads
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'public/uploads/');
@@ -43,7 +42,7 @@ const storage = multer.diskStorage({
 const upload = multer({ 
     storage: storage,
     limits: {
-        fileSize: 5 * 1024 * 1024 // 5MB limit
+        fileSize: 5 * 1024 * 1024
     },
     fileFilter: function (req, file, cb) {
         const allowedTypes = /jpeg|jpg|png|gif|webp/;
@@ -98,28 +97,23 @@ const merchantValidation = [
     .trim()
 ];
 
-// Merchant profile routes (protected) - MUST come before /:id route
 router.get('/profile', authMiddleware, getMerchantProfile);
 router.put('/profile', authMiddleware, updateMerchantProfile);
 
-// Merchant store routes (protected) - MUST come before /:id route
 router.post('/store', authMiddleware, upload.none(), createMerchantStore);
 router.get('/store', authMiddleware, getMerchantStore);
 router.put('/store', authMiddleware, upload.none(), updateMerchantStore);
 router.delete('/store', authMiddleware, deleteMerchantStore);
 
-// Merchant offers routes (protected) - MUST come before /:id route
 router.get('/offers', authMiddleware, getMerchantOffers);
 router.post('/offers', authMiddleware, upload.none(), createMerchantOffer);
 router.put('/offers/:id', authMiddleware, upload.none(), updateMerchantOffer);
 router.delete('/offers/:id', deleteMerchantOffer); // Temporarily remove auth for testing
 
-// Merchant notifications routes (protected)
 router.get('/notifications', authMiddleware, require('../controllers/notificationController').getMerchantNotificationsByToken);
 router.patch('/notifications/:id/read', authMiddleware, require('../controllers/notificationController').markNotificationAsRead);
 router.patch('/notifications/read-all', authMiddleware, require('../controllers/notificationController').markAllMerchantNotificationsAsRead);
 
-// Merchant management routes - MUST come after specific routes
 router.get('/', getAllMerchants);
 router.get('/pending', getPendingApprovals);
 router.put('/:id/toggle-status', toggleMerchantStatus);

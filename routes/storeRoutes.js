@@ -13,7 +13,6 @@ const {
 
 const router = express.Router();
 
-// Validation middleware for store creation/update
 const storeValidation = [
   body('name')
     .notEmpty()
@@ -51,7 +50,6 @@ const storeValidation = [
     .optional()
     .custom((value) => {
       if (!value || value.trim() === '') return true;
-      // Allow both relative paths (/uploads/...) and full URLs (http://...)
       return /^(\/uploads\/.+|https?:\/\/.+)/.test(value);
     })
     .withMessage('Logo URL must be a valid URL or upload path'),

@@ -32,13 +32,11 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-// Update the updatedAt field before saving
 userSchema.pre('save', function(next) {
   this.updatedAt = Date.now();
   next();
 });
 
-// Index for better query performance
 userSchema.index({ email: 1 });
 userSchema.index({ favorites: 1 });
 

@@ -43,7 +43,6 @@ const {
 
 const router = express.Router();
 
-// Admin validation middleware for offer creation/update
 const adminOfferValidation = [
   body('title')
     .notEmpty()
@@ -113,7 +112,6 @@ const adminOfferValidation = [
     .withMessage('isActive must be a boolean value')
 ];
 
-// Admin Routes - No merchant authentication required
 router.get('/offers', getAllOffers);
 router.get('/offers/featured', require('../controllers/offerController').getFeaturedOffers);
 router.get('/offers/categories', getCategories);
@@ -124,7 +122,6 @@ router.delete('/offers/:id', adminAuthMiddleware, deleteOffer);
 router.patch('/offers/:id/toggle-featured', adminAuthMiddleware, toggleOfferFeatured);
 router.patch('/offers/:id/toggle-status', adminAuthMiddleware, toggleOfferStatus);
 
-// Admin Store Routes
 router.get('/stores', getAllStores);
 router.get('/stores/:id', getStoreById);
 router.post('/stores', adminAuthMiddleware, createStore);
@@ -132,7 +129,6 @@ router.put('/stores/:id', adminAuthMiddleware, updateStore);
 router.delete('/stores/:id', adminAuthMiddleware, deleteStore);
 router.patch('/stores/:id/toggle-status', adminAuthMiddleware, toggleStoreStatus);
 
-// Admin Merchant Routes
 router.get('/merchants', getAllMerchants);
 router.get('/merchants/payment-status', adminAuthMiddleware, getMerchantsWithPaymentStatus);
 router.get('/merchants/:id', getMerchantById);
@@ -142,13 +138,11 @@ router.patch('/merchants/:id/toggle-status', adminAuthMiddleware, toggleMerchant
 router.post('/merchants/:merchantId/set-access-fee', adminAuthMiddleware, setMerchantAccessFee);
 router.post('/merchants/:merchantId/mark-fee-paid', adminAuthMiddleware, markAccessFeeAsPaid);
 
-// Admin Payment Routes
 router.get('/payments/pending', adminAuthMiddleware, getPendingPayments);
 router.get('/payments/all', adminAuthMiddleware, getAllPayments);
 router.patch('/payments/:id/approve', adminAuthMiddleware, approvePayment);
 router.patch('/payments/:id/reject', adminAuthMiddleware, rejectPayment);
 
-// Admin Notification Routes
 router.post('/merchants/:merchantId/notify', adminAuthMiddleware, sendNotificationToMerchant);
 router.post('/merchants/notify-multiple', adminAuthMiddleware, sendNotificationToMultipleMerchants);
 router.post('/merchants/notify-all', adminAuthMiddleware, sendNotificationToAllMerchants);
