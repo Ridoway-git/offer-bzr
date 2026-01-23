@@ -23,6 +23,14 @@ const createPayment = async (req, res) => {
       });
     }
 
+    const merchant = await Merchant.findById(merchantId);
+    if (!merchant) {
+      return res.status(404).json({
+        success: false,
+        message: 'Merchant not found'
+      });
+    }
+
     const {
       amount,
       paymentMethod,
@@ -78,9 +86,9 @@ const createPayment = async (req, res) => {
         product_name: 'Merchant Package',
         product_category: 'Service',
         product_profile: 'general',
-        cus_name: merchant?.name || 'Merchant',
-        cus_email: merchant?.email || 'merchant@example.com',
-        cus_add1: merchant?.address || 'Dhaka',
+        cus_name: merchant.name || 'Merchant',
+        cus_email: merchant.email || 'merchant@example.com',
+        cus_add1: merchant.address || 'Dhaka',
         cus_city: 'Dhaka',
         cus_state: 'Dhaka',
         cus_postcode: '1000',
@@ -195,11 +203,12 @@ const createPayment = async (req, res) => {
       data: payment
     });
   } catch (error) {
-    console.error('Error creating payment:', error);
+    console.error('Error creating payment (Generic Catch):', error);
     res.status(500).json({
       success: false,
       message: 'Error creating payment',
-      error: error.message
+      error: error.message,
+      details: error.errors // In case of Mongoose validation errors
     });
   }
 };
