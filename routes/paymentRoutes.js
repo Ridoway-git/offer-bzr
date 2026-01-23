@@ -13,7 +13,11 @@ const {
   rejectPayment,
   addCommission,
   getPaymentById,
-  deletePayment
+  deletePayment,
+  sslSuccess,
+  sslFail,
+  sslCancel,
+  sslIpn
 } = require('../controllers/paymentController');
 
 const router = express.Router();
@@ -28,16 +32,16 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ 
+const upload = multer({
   storage: storage,
   limits: {
-    fileSize: 5 * 1024 * 1024 
+    fileSize: 5 * 1024 * 1024
   },
   fileFilter: function (req, file, cb) {
     const allowedTypes = /jpeg|jpg|png|gif|webp|pdf/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = allowedTypes.test(file.mimetype);
-    
+
     if (mimetype && extname) {
       return cb(null, true);
     } else {
@@ -52,12 +56,18 @@ if (!fs.existsSync(paymentProofsDir)) {
   fs.mkdirSync(paymentProofsDir, { recursive: true });
 }
 
+// SSLCommerz Routes
+router.post('/ssl-success', sslSuccess);
+router.post('/ssl-fail', sslFail);
+router.post('/ssl-cancel', sslCancel);
+router.post('/ssl-ipn', sslIpn);
+
 router.post('/', authMiddleware, upload.single('paymentProof'), async (req, res) => {
   try {
     if (req.file) {
       req.body.paymentProof = `/uploads/payment-proofs/${req.file.filename}`;
     }
-    
+
     return await createPayment(req, res);
   } catch (error) {
     res.status(500).json({
