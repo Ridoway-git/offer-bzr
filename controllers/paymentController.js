@@ -5,10 +5,9 @@ const SSLCommerz = require('sslcommerz-nodejs');
 
 // SSLCommerz configuration
 const config = {
+  isSandboxMode: process.env.IS_LIVE !== 'true',
   store_id: process.env.STORE_ID || 'testbox',
   store_passwd: process.env.STORE_PASSWORD || 'qwerty',
-  is_live: process.env.IS_LIVE === 'true',
-  api_url: process.env.IS_LIVE === 'true' ? 'https://securepay.sslcommerz.com/gwprocess/v4/api.php' : 'https://sandbox.sslcommerz.com/gwprocess/v4/api.php',
 };
 
 
@@ -103,7 +102,7 @@ const createPayment = async (req, res) => {
       };
 
       try {
-        const data = await sslcommerz.init(postData);
+        const data = await sslcommerz.init_transaction(postData);
 
         if (data?.GatewayPageURL) {
           const paymentData = {
@@ -202,7 +201,7 @@ const sslSuccess = async (req, res) => {
     const { val_id, value_a, value_b, value_c, value_d, tran_id } = req.body;
 
     const sslcommerz = new SSLCommerz(config);
-    const validation = await sslcommerz.validate(val_id);
+    const validation = await sslcommerz.validate_transaction_order(val_id);
 
     if (validation && (validation.status === 'VALID' || validation.status === 'VALIDATED')) {
       const payment = await Payment.findOne({ transactionId: tran_id });
