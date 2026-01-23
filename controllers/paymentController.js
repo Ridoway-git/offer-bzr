@@ -90,10 +90,10 @@ const createPayment = async (req, res) => {
         ship_state: 'Dhaka',
         ship_postcode: 1000,
         ship_country: 'Bangladesh',
-        value_a: merchantId, // Pass merchant ID in extra param
-        value_b: packageId || '', // Pass package ID
-        value_c: packageDurationMonths || '', // Pass duration
-        value_d: commissionId || commission._id // Pass commission ID
+        value_a: merchantId ? merchantId.toString() : '', // Pass merchant ID in extra param
+        value_b: packageId ? packageId.toString() : '', // Pass package ID
+        value_c: packageDurationMonths ? packageDurationMonths.toString() : '', // Pass duration
+        value_d: commissionId ? commissionId.toString() : (commission._id ? commission._id.toString() : '') // Pass commission ID
       };
 
       const sslcz = new SSLCommerzPayment(store_id, store_passwd, is_live);
