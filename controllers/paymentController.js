@@ -67,30 +67,27 @@ const createPayment = async (req, res) => {
       const sslcommerz = new SSLCommerz(config);
 
       const postData = {
-        total_amount: amount,
+        total_amount: parseFloat(amount).toFixed(2),
         currency: 'BDT',
         tran_id: tran_id,
         success_url: `${process.env.API_URL || 'http://localhost:5000'}/api/payments/ssl-success`,
         fail_url: `${process.env.API_URL || 'http://localhost:5000'}/api/payments/ssl-fail`,
         cancel_url: `${process.env.API_URL || 'http://localhost:5000'}/api/payments/ssl-cancel`,
         ipn_url: `${process.env.API_URL || 'http://localhost:5000'}/api/payments/ssl-ipn`,
-        shipping_method: 'No',
-        product_name: 'Payment',
-        product_category: 'Payment',
+        shipping_method: 'NO',
+        product_name: 'Merchant Package',
+        product_category: 'Service',
         product_profile: 'general',
-        cus_name: 'Merchant',
-        cus_email: 'merchant@example.com',
-        cus_add1: 'Dhaka',
-        cus_add2: 'Dhaka',
+        cus_name: merchant?.name || 'Merchant',
+        cus_email: merchant?.email || 'merchant@example.com',
+        cus_add1: merchant?.address || 'Dhaka',
         cus_city: 'Dhaka',
         cus_state: 'Dhaka',
         cus_postcode: '1000',
         cus_country: 'Bangladesh',
-        cus_phone: '01711111111',
-        cus_fax: '01711111111',
-        ship_name: 'Merchant',
-        ship_add1: 'Dhaka',
-        ship_add2: 'Dhaka',
+        cus_phone: merchant?.phone || '01711111111',
+        ship_name: merchant?.name || 'Merchant',
+        ship_add1: merchant?.address || 'Dhaka',
         ship_city: 'Dhaka',
         ship_state: 'Dhaka',
         ship_postcode: 1000,
@@ -101,13 +98,22 @@ const createPayment = async (req, res) => {
         value_d: commissionId ? commissionId.toString() : (commission._id ? commission._id.toString() : '')
       };
 
+      console.log('Environment Debug:', {
+        STORE_ID: process.env.STORE_ID ? 'Set' : 'Missing',
+        STORE_PASSWORD: process.env.STORE_PASSWORD ? 'Set' : 'Missing',
+        IS_LIVE: process.env.IS_LIVE,
+        API_URL: process.env.API_URL
+      });
+
       try {
+        console.log('Initiating SSLCommerz with:', { ...postData, store_passwd: '***' });
         const data = await sslcommerz.init_transaction(postData);
+        console.log('SSLCommerz Response:', data);
 
         if (data?.GatewayPageURL) {
           const paymentData = {
             merchant: merchantId,
-            amount,
+            amount: parseFloat(amount),
             paymentMethod,
             transactionId: tran_id,
             commissionId: commissionId || commission._id,
@@ -116,7 +122,7 @@ const createPayment = async (req, res) => {
 
           if (packageId) {
             paymentData.package = packageId;
-            paymentData.packageDurationMonths = packageDurationMonths;
+            paymentData.packageDurationMonths = parseInt(packageDurationMonths);
           }
 
           const payment = new Payment(paymentData);
@@ -128,17 +134,20 @@ const createPayment = async (req, res) => {
             paymentId: payment._id
           });
         } else {
+          console.error('SSLCommerz initialization failed. Response:', data);
           return res.status(400).json({
             success: false,
-            message: 'SSLCommerz Session Failed'
+            message: 'SSLCommerz Session Failed',
+            details: data
           });
         }
       } catch (error) {
-        console.error('SSLCommerz Init Error:', error);
+        console.error('SSLCommerz Init Exception:', error);
         return res.status(500).json({
           success: false,
           message: 'SSLCommerz Init Error',
-          error: error.message
+          error: error.message,
+          stack: error.stack
         });
       }
     }
