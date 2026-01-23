@@ -1,12 +1,15 @@
 const Payment = require('../models/Payment');
 const Commission = require('../models/Commission');
 const Merchant = require('../models/Merchant');
-const SSLCommerzPayment = require('sslcommerz-lts');
+const SSLCommerz = require('sslcommerz-nodejs');
 
 // SSLCommerz configuration
-const store_id = process.env.STORE_ID || 'testbox';
-const store_passwd = process.env.STORE_PASSWORD || 'qwerty';
-const is_live = process.env.IS_LIVE === 'true';
+const config = {
+  store_id: process.env.STORE_ID || 'testbox',
+  store_passwd: process.env.STORE_PASSWORD || 'qwerty',
+  is_live: process.env.IS_LIVE === 'true',
+  api_url: process.env.IS_LIVE === 'true' ? 'https://securepay.sslcommerz.com/gwprocess/v4/api.php' : 'https://sandbox.sslcommerz.com/gwprocess/v4/api.php',
+};
 
 // Create a new payment
 const createPayment = async (req, res) => {
@@ -61,7 +64,9 @@ const createPayment = async (req, res) => {
     if (paymentMethod === 'sslcommerz') {
       const tran_id = transactionId || `TXN-${Date.now()}`;
 
-      const data = {
+      const sslcommerz = new SSLCommerz(config);
+
+      const postData = {
         total_amount: amount,
         currency: 'BDT',
         tran_id: tran_id,
@@ -96,11 +101,10 @@ const createPayment = async (req, res) => {
         value_d: commissionId ? commissionId.toString() : (commission._id ? commission._id.toString() : '') // Pass commission ID
       };
 
-      const sslcz = new SSLCommerzPayment(store_id, store_passwd, is_live);
-
       try {
-        const apiResponse = await sslcz.init(data);
-        if (apiResponse?.GatewayPageURL) {
+        const data = await sslcommerz.init(postData);
+
+        if (data?.GatewayPageURL) {
 
           // Determine status based on what we're doing
           // If we have package ID, we don't save payment yet, we wait for success
@@ -125,7 +129,7 @@ const createPayment = async (req, res) => {
 
           return res.status(200).json({
             success: true,
-            gatewayUrl: apiResponse.GatewayPageURL,
+            gatewayUrl: data.GatewayPageURL,
             paymentId: payment._id
           });
         }
@@ -136,10 +140,10 @@ const createPayment = async (req, res) => {
           });
         }
       } catch (error) {
-        console.error('SSLCommerz Error:', error);
+        console.error('SSLCommerz Init Error:', error);
         return res.status(500).json({
           success: false,
-          message: 'SSLCommerz Error',
+          message: 'SSLCommerz Init Error',
           error: error.message
         });
       }
@@ -200,14 +204,9 @@ const sslSuccess = async (req, res) => {
   try {
     const { val_id, value_a, value_b, value_c, value_d, tran_id } = req.body;
 
-    // value_a = merchantId
-    // value_b = packageId
-    // value_c = packageDurationMonths
-    // value_d = commissionId
-
     // Validate Payment
-    const sslcz = new SSLCommerzPayment(store_id, store_passwd, is_live)
-    const validation = await sslcz.validate({ val_id });
+    const sslcommerz = new SSLCommerz(config);
+    const validation = await sslcommerz.validate(val_id);
 
     if (validation && (validation.status === 'VALID' || validation.status === 'VALIDATED')) {
 
