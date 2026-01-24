@@ -771,10 +771,15 @@ function displayMerchants() {
             
             <div class="merchant-actions">
 
-                <button class="btn ${merchant.isApproved ? 'btn-danger' : 'btn-success'}" 
-                        onclick="toggleMerchantApproval('${merchant._id}', ${!!merchant.isApproved})">
-                    <i class="fas fa-${merchant.isApproved ? 'times' : 'check'}"></i>
-                    ${merchant.isApproved ? 'Reject' : 'Approve'}
+                <button class="btn btn-success" 
+                        onclick="toggleMerchantApproval('${merchant._id}', false)" 
+                        ${merchant.isApproved ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+                    <i class="fas fa-check"></i> Approve
+                </button>
+                <button class="btn btn-danger" 
+                        onclick="toggleMerchantApproval('${merchant._id}', true)" 
+                        ${!merchant.isApproved ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+                    <i class="fas fa-times"></i> Reject
                 </button>
                 <button class="btn btn-primary" onclick="sendNotificationToMerchant('${merchant._id}')">
                     <i class="fas fa-bell"></i> Notify
