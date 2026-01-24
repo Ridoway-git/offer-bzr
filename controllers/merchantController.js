@@ -171,15 +171,30 @@ const toggleMerchantApproval = async (req, res) => {
     }
 
     // Update both approvalStatus and isApproved
-    if (merchant.approvalStatus === 'pending') {
+    if (merchant.approvalStatus === 'pending' || merchant.approvalStatus === 'rejected') {
       merchant.approvalStatus = 'approved';
       merchant.isApproved = true;
+
+      // Activate package if exists
+      if (merchant.package) {
+        const Package = require('../models/Package');
+        const pkg = await Package.findById(merchant.package);
+
+        if (pkg) {
+          const startDate = new Date();
+          const endDate = new Date(startDate);
+          endDate.setMonth(endDate.getMonth() + pkg.durationInMonths);
+
+          merchant.packageStartDate = startDate;
+          merchant.packageEndDate = endDate;
+          merchant.packageStatus = 'active';
+        }
+      }
     } else if (merchant.approvalStatus === 'approved') {
       merchant.approvalStatus = 'rejected';
       merchant.isApproved = false;
-    } else if (merchant.approvalStatus === 'rejected') {
-      merchant.approvalStatus = 'approved';
-      merchant.isApproved = true;
+      // Optional: deactivate package on reject? 
+      // merchant.packageStatus = 'inactive'; // Keeping simple for now as per request
     }
 
     await merchant.save();
