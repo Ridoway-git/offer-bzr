@@ -85,12 +85,11 @@ const paymentSchema = new mongoose.Schema({
     type: Date
   },
   approvedBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+    type: String // Changed from ObjectId to String to allow 'admin'
   }
 });
 
-paymentSchema.pre('save', function(next) {
+paymentSchema.pre('save', function (next) {
   this.updatedAt = Date.now();
   if (this.status === 'approved' && !this.approvedAt) {
     this.approvedAt = Date.now();
