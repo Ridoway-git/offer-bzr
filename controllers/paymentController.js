@@ -250,8 +250,15 @@ const sslSuccess = async (req, res) => {
         }
 
         if (value_b && merchant) {
-          const startDate = new Date();
-          const endDate = new Date(startDate);
+          let startDate = new Date();
+          let endDate = new Date();
+
+          // Check if merchant has an active subscription to extend
+          if (merchant.packageStatus === 'active' && merchant.packageEndDate && new Date(merchant.packageEndDate) > new Date()) {
+            startDate = merchant.packageStartDate; // Keep original start date
+            endDate = new Date(merchant.packageEndDate); // Start calculation from current expiry
+          }
+
           endDate.setMonth(endDate.getMonth() + parseInt(value_c || 1));
 
           merchant.package = value_b;
@@ -476,8 +483,15 @@ const approvePayment = async (req, res) => {
 
       if (package) {
         // Calculate package start and end dates
-        const startDate = new Date();
-        const endDate = new Date(startDate);
+        let startDate = new Date();
+        let endDate = new Date();
+
+        // Check if merchant has an active subscription to extend
+        if (merchant.packageStatus === 'active' && merchant.packageEndDate && new Date(merchant.packageEndDate) > new Date()) {
+          startDate = merchant.packageStartDate; // Keep original start date
+          endDate = new Date(merchant.packageEndDate); // Start calculation from current expiry
+        }
+
         endDate.setMonth(endDate.getMonth() + payment.packageDurationMonths);
 
         // Update merchant with package information
