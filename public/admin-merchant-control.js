@@ -224,38 +224,4 @@ window.addEventListener('merchantsLoaded', function () {
     }
 });
 
-// Override toggleMerchantApproval with specific messages
-async function toggleMerchantApproval(merchantId, currentStatus) {
-    const isCurrentlyApproved = !!currentStatus;
 
-    try {
-        const response = await fetch(`${API_BASE_URL}/admin/merchants/${merchantId}/toggle-approval`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer admin-token'
-            }
-        });
-
-        const data = await response.json();
-
-        if (response.ok && data.success) {
-            const newStatus = !isCurrentlyApproved;
-            // User requested: "merchant reject successfully" vs "approved"
-            let msg = '';
-            if (newStatus) {
-                msg = 'Merchant approved successfully!';
-            } else {
-                msg = 'Merchant reject successfully!';
-            }
-
-            showToast(msg, 'success');
-            loadMerchants();
-        } else {
-            showToast(data.message || `Error ${isCurrentlyApproved ? 'rejecting' : 'approving'} merchant`, 'error');
-        }
-    } catch (error) {
-        console.error('Error toggling merchant approval:', error);
-        showToast(`Error ${isCurrentlyApproved ? 'rejecting' : 'approving'} merchant`, 'error');
-    }
-}

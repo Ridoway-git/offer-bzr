@@ -1,6 +1,6 @@
 // API Base URL
-const API_BASE_URL = window.location.hostname === 'localhost' 
-    ? 'http://localhost:5000/api' 
+const API_BASE_URL = window.location.hostname === 'localhost'
+    ? 'http://localhost:5000/api'
     : '/api';
 
 // Global variables
@@ -8,7 +8,7 @@ let stores = [];
 let offers = [];
 
 // Initialize the application
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     loadDashboard();
     loadStores();
     loadOffers();
@@ -21,15 +21,15 @@ function showSection(sectionName) {
     document.querySelectorAll('.section').forEach(section => {
         section.classList.remove('active');
     });
-    
+
     // Remove active class from all nav buttons
     document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.classList.remove('active');
     });
-    
+
     // Show selected section
     document.getElementById(sectionName).classList.add('active');
-    
+
     // Add active class to clicked nav button
     event.target.classList.add('active');
 }
@@ -50,7 +50,7 @@ async function loadDashboard() {
         document.getElementById('totalStores').textContent = storesData.pagination?.totalStores || 0;
         document.getElementById('totalOffers').textContent = offersData.pagination?.totalOffers || 0;
         document.getElementById('featuredOffers').textContent = featuredData.data?.length || 0;
-        
+
         const activeStores = storesData.data?.filter(store => store.isActive).length || 0;
         document.getElementById('activeStores').textContent = activeStores;
     } catch (error) {
@@ -64,7 +64,7 @@ async function loadStores() {
     try {
         const response = await fetch(`${API_BASE_URL}/stores?isActive=all`);
         const data = await response.json();
-        
+
         if (data.success) {
             stores = data.data;
             displayStores(stores);
@@ -79,7 +79,7 @@ async function loadStores() {
 
 function displayStores(storesList) {
     const storesListElement = document.getElementById('storesList');
-    
+
     if (storesList.length === 0) {
         storesListElement.innerHTML = '<div class="loading">No stores found. Create your first store!</div>';
         return;
@@ -90,10 +90,10 @@ function displayStores(storesList) {
             <div class="store-header">
                 <div class="store-info">
                     <div class="store-logo-container">
-                        ${store.logoUrl ? 
-                            `<img src="${store.logoUrl}" alt="${store.name} Logo" class="store-logo" onerror="this.style.display='none'">` : 
-                            `<div class="store-logo-placeholder"><i class="fas fa-store"></i></div>`
-                        }
+                        ${store.logoUrl ?
+            `<img src="${store.logoUrl}" alt="${store.name} Logo" class="store-logo" onerror="this.style.display='none'">` :
+            `<div class="store-logo-placeholder"><i class="fas fa-store"></i></div>`
+        }
                     </div>
                 <div class="store-details-text">
                     <div class="store-title">${store.name}</div>
@@ -160,7 +160,7 @@ function showCreateStoreForm() {
     document.getElementById('createStoreForm').style.display = 'block';
     document.getElementById('storeForm').reset();
     document.getElementById('storeActive').checked = true;
-    
+
     // Reset form title and button
     document.querySelector('#createStoreForm h3').textContent = 'Create New Store';
     document.querySelector('#createStoreForm button[type="submit"]').textContent = 'Create Store';
@@ -172,9 +172,9 @@ function hideCreateStoreForm() {
 }
 
 // Store form submission
-document.getElementById('storeForm').addEventListener('submit', async function(e) {
+document.getElementById('storeForm').addEventListener('submit', async function (e) {
     e.preventDefault();
-    
+
     const formData = new FormData(this);
     const storeData = {
         name: formData.get('name'),
@@ -228,7 +228,7 @@ async function loadOffers() {
         // Fetch ALL offers (including deactivated ones) for admin panel
         const response = await fetch(`${API_BASE_URL}/offers?isActive=all`);
         const data = await response.json();
-        
+
         if (data.success) {
             offers = data.data;
             displayOffers(offers);
@@ -243,7 +243,7 @@ async function loadOffers() {
 
 function displayOffers(offersList) {
     const offersListElement = document.getElementById('offersList');
-    
+
     if (offersList.length === 0) {
         offersListElement.innerHTML = '<div class="loading">No offers found. Create your first offer!</div>';
         return;
@@ -318,7 +318,7 @@ function showCreateOfferForm() {
     document.getElementById('createOfferForm').style.display = 'block';
     document.getElementById('offerForm').reset();
     loadStoreOptions();
-    
+
     // Reset form title and button
     document.querySelector('#createOfferForm h3').textContent = 'Create New Offer';
     document.querySelector('#createOfferForm button[type="submit"]').textContent = 'Create Offer';
@@ -332,7 +332,7 @@ function hideCreateOfferForm() {
 async function loadStoreOptions() {
     const storeSelect = document.getElementById('offerStore');
     storeSelect.innerHTML = '<option value="">Select a store</option>';
-    
+
     stores.forEach(store => {
         const option = document.createElement('option');
         option.value = store._id;
@@ -342,9 +342,9 @@ async function loadStoreOptions() {
 }
 
 // Offer form submission
-document.getElementById('offerForm').addEventListener('submit', async function(e) {
+document.getElementById('offerForm').addEventListener('submit', async function (e) {
     e.preventDefault();
-    
+
     const formData = new FormData(this);
     const offerData = {
         title: formData.get('title'),
@@ -369,7 +369,7 @@ document.getElementById('offerForm').addEventListener('submit', async function(e
         console.log('Admin offer submission - URL:', url);
         console.log('Admin offer submission - Method:', method);
         console.log('Admin offer submission - Data:', offerData);
-        
+
         const response = await fetch(url, {
             method: method,
             headers: {
@@ -549,7 +549,7 @@ function editStore(storeId) {
 
     // Show create form and populate with store data
     showCreateStoreForm();
-    
+
     // Populate form with existing data
     document.getElementById('storeName').value = store.name;
     document.getElementById('storeCategory').value = store.category;
@@ -558,11 +558,11 @@ function editStore(storeId) {
     document.getElementById('storeEmail').value = store.contactEmail || '';
     document.getElementById('storeLogo').value = store.logoUrl || '';
     document.getElementById('storeActive').checked = store.isActive;
-    
+
     // Change form title and submit button
     document.querySelector('#createStoreForm h3').textContent = 'Edit Store';
     document.querySelector('#createStoreForm button[type="submit"]').textContent = 'Update Store';
-    
+
     // Store the store ID for update
     document.getElementById('storeForm').dataset.editId = storeId;
 }
@@ -577,7 +577,7 @@ function editOffer(offerId) {
 
     // Show create form and populate with offer data
     showCreateOfferForm();
-    
+
     // Populate form with existing data
     document.getElementById('offerTitle').value = offer.title;
     document.getElementById('offerCode').value = offer.offerCode;
@@ -588,19 +588,19 @@ function editOffer(offerId) {
     document.getElementById('offerDiscountType').value = offer.discountType;
     document.getElementById('offerStore').value = offer.store._id;
     document.getElementById('offerCategory').value = offer.category;
-    
+
     // Format date for datetime-local input
     const expiryDate = new Date(offer.expiryDate);
     const formattedDate = expiryDate.toISOString().slice(0, 16);
     document.getElementById('offerExpiry').value = formattedDate;
-    
+
     document.getElementById('offerMinPurchase').value = offer.minPurchaseAmount || 0;
     document.getElementById('offerFeatured').checked = offer.isFeatured;
-    
+
     // Change form title and submit button
     document.querySelector('#createOfferForm h3').textContent = 'Edit Offer';
     document.querySelector('#createOfferForm button[type="submit"]').textContent = 'Update Offer';
-    
+
     // Store the offer ID for update
     document.getElementById('offerForm').dataset.editId = offerId;
 }
@@ -608,7 +608,7 @@ function editOffer(offerId) {
 // Search Functions
 function searchStores() {
     const searchTerm = document.getElementById('storeSearch').value.toLowerCase();
-    const filteredStores = stores.filter(store => 
+    const filteredStores = stores.filter(store =>
         store.name.toLowerCase().includes(searchTerm) ||
         store.category.toLowerCase().includes(searchTerm) ||
         store.description.toLowerCase().includes(searchTerm)
@@ -618,7 +618,7 @@ function searchStores() {
 
 function searchOffers() {
     const searchTerm = document.getElementById('offerSearch').value.toLowerCase();
-    const filteredOffers = offers.filter(offer => 
+    const filteredOffers = offers.filter(offer =>
         offer.title.toLowerCase().includes(searchTerm) ||
         offer.offerCode.toLowerCase().includes(searchTerm) ||
         offer.description.toLowerCase().includes(searchTerm) ||
@@ -635,7 +635,7 @@ function showToast(message, type = 'success') {
     const toast = document.getElementById('toast');
     toast.textContent = message;
     toast.className = `toast ${type} show`;
-    
+
     setTimeout(() => {
         toast.classList.remove('show');
     }, 3000);
@@ -671,11 +671,11 @@ async function loadMerchants() {
                 return;
             }
         }
-        
+
         // Fallback to regular merchants endpoint
         const fallbackResponse = await fetch(`${API_BASE_URL}/merchants`);
         const fallbackData = await fallbackResponse.json();
-        
+
         if (fallbackData.success) {
             merchants = fallbackData.data;
             displayMerchants();
@@ -698,12 +698,12 @@ async function loadMerchants() {
 
 function displayMerchants() {
     const merchantsListElement = document.getElementById('merchantsList');
-    
+
     if (merchants.length === 0) {
         merchantsListElement.innerHTML = '<div class="empty-state">No merchants found</div>';
         return;
     }
-    
+
     merchantsListElement.innerHTML = merchants.map(merchant => `
         <div class="merchant-item">
             <div class="merchant-header">
@@ -771,15 +771,10 @@ function displayMerchants() {
             
             <div class="merchant-actions">
 
-                <button class="btn ${merchant.isApproved ? 'btn-warning' : 'btn-success'}" 
+                <button class="btn ${merchant.isApproved ? 'btn-danger' : 'btn-success'}" 
                         onclick="toggleMerchantApproval('${merchant._id}', ${!!merchant.isApproved})">
                     <i class="fas fa-${merchant.isApproved ? 'times' : 'check'}"></i>
-                    ${merchant.isApproved ? 'Disapprove' : 'Approve'}
-                </button>
-                <button class="btn ${merchant.isActive ? 'btn-warning' : 'btn-success'}" 
-                        onclick="toggleMerchantStatus('${merchant._id}', ${merchant.isActive})">
-                    <i class="fas fa-${merchant.isActive ? 'pause' : 'play'}"></i>
-                    ${merchant.isActive ? 'Deactivate' : 'Activate'}
+                    ${merchant.isApproved ? 'Reject' : 'Approve'}
                 </button>
                 <button class="btn btn-primary" onclick="sendNotificationToMerchant('${merchant._id}')">
                     <i class="fas fa-bell"></i> Notify
@@ -800,12 +795,12 @@ function displayMerchants() {
 
 function displayPendingStores() {
     const pendingStoresElement = document.getElementById('pendingStores');
-    
+
     if (pendingStores.length === 0) {
         pendingStoresElement.innerHTML = '<div class="empty-state">No pending stores</div>';
         return;
     }
-    
+
     pendingStoresElement.innerHTML = pendingStores.map(store => `
         <div class="pending-item">
             <h4>${store.name}</h4>
@@ -827,12 +822,12 @@ function displayPendingStores() {
 
 function displayPendingOffers() {
     const pendingOffersElement = document.getElementById('pendingOffers');
-    
+
     if (pendingOffers.length === 0) {
         pendingOffersElement.innerHTML = '<div class="empty-state">No pending offers</div>';
         return;
     }
-    
+
     pendingOffersElement.innerHTML = pendingOffers.map(offer => `
         <div class="pending-item">
             <h4>${offer.title}</h4>
@@ -860,9 +855,9 @@ function updateApprovalCounts() {
 function showApprovalTab(tabName) {
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     document.querySelectorAll('.approval-content').forEach(content => content.style.display = 'none');
-    
+
     event.target.classList.add('active');
-    
+
     if (tabName === 'stores') {
         document.getElementById('pendingStores').style.display = 'block';
     } else if (tabName === 'offers') {
@@ -872,19 +867,19 @@ function showApprovalTab(tabName) {
 
 async function searchMerchants() {
     const searchTerm = document.getElementById('merchantSearch').value.toLowerCase();
-    const filteredMerchants = merchants.filter(merchant => 
+    const filteredMerchants = merchants.filter(merchant =>
         merchant.name.toLowerCase().includes(searchTerm) ||
         merchant.businessName.toLowerCase().includes(searchTerm) ||
         merchant.email.toLowerCase().includes(searchTerm)
     );
-    
+
     const merchantsListElement = document.getElementById('merchantsList');
-    
+
     if (filteredMerchants.length === 0) {
         merchantsListElement.innerHTML = '<div class="empty-state">No merchants found matching your search</div>';
         return;
     }
-    
+
     merchantsListElement.innerHTML = filteredMerchants.map(merchant => `
         <div class="merchant-item">
             <div class="merchant-header">
@@ -975,7 +970,7 @@ async function searchMerchants() {
 async function toggleMerchantApproval(merchantId, currentStatus) {
     // Convert currentStatus to proper boolean if it's undefined
     const isCurrentlyApproved = !!currentStatus;
-    
+
     try {
         const response = await fetch(`${API_BASE_URL}/admin/merchants/${merchantId}/toggle-approval`, {
             method: 'PATCH',
@@ -984,20 +979,26 @@ async function toggleMerchantApproval(merchantId, currentStatus) {
                 'Authorization': 'Bearer admin-token'
             }
         });
-        
+
         const data = await response.json();
-        
+
         if (response.ok && data.success) {
             const newStatus = !isCurrentlyApproved;
-            const action = newStatus ? 'approved' : 'disapproved';
-            showToast(`Merchant ${action} successfully!`, 'success');
+            // User requested specific messages
+            let msg = '';
+            if (newStatus) {
+                msg = 'Merchant approved successfully!';
+            } else {
+                msg = 'Merchant reject successfully!';
+            }
+            showToast(msg, 'success');
             loadMerchants();
         } else {
-            showToast(data.message || `Error ${isCurrentlyApproved ? 'disapproving' : 'approving'} merchant`, 'error');
+            showToast(data.message || `Error ${isCurrentlyApproved ? 'rejecting' : 'approving'} merchant`, 'error');
         }
     } catch (error) {
         console.error('Error toggling merchant approval:', error);
-        showToast(`Error ${isCurrentlyApproved ? 'disapproving' : 'approving'} merchant`, 'error');
+        showToast(`Error ${isCurrentlyApproved ? 'rejecting' : 'approving'} merchant`, 'error');
     }
 }
 
@@ -1010,9 +1011,9 @@ async function approveStore(storeId) {
                 'Authorization': 'Bearer admin-token' // Simple admin token for now
             }
         });
-        
+
         const data = await response.json();
-        
+
         if (data.success) {
             showToast('Store approved successfully', 'success');
         } else {
@@ -1033,9 +1034,9 @@ async function approveOffer(offerId) {
                 'Authorization': 'Bearer admin-token' // Simple admin token for now
             }
         });
-        
+
         const data = await response.json();
-        
+
         if (data.success) {
             showToast('Offer approved successfully', 'success');
         } else {
@@ -1051,7 +1052,7 @@ async function deleteMerchant(merchantId) {
     if (!confirm('Are you sure you want to delete this merchant?')) {
         return;
     }
-    
+
     try {
         const response = await fetch(`${API_BASE_URL}/merchants/${merchantId}`, {
             method: 'DELETE',
@@ -1060,9 +1061,9 @@ async function deleteMerchant(merchantId) {
                 'Authorization': 'Bearer admin-token' // Simple admin token for now
             }
         });
-        
+
         const data = await response.json();
-        
+
         if (data.success) {
             showToast('Merchant deleted successfully', 'success');
             loadMerchants();
@@ -1080,18 +1081,18 @@ function hideCreateMerchantForm() {
     document.getElementById('merchantForm').reset();
 }
 
-document.getElementById('merchantForm').addEventListener('submit', async function(e) {
+document.getElementById('merchantForm').addEventListener('submit', async function (e) {
     e.preventDefault();
-    
+
     const formData = new FormData(this);
     const merchantData = Object.fromEntries(formData.entries());
-    
+
     Object.keys(merchantData).forEach(key => {
         if (merchantData[key] === '') {
             merchantData[key] = undefined;
         }
     });
-    
+
     try {
         const response = await fetch(`${API_BASE_URL}/merchants`, {
             method: 'POST',
@@ -1100,9 +1101,9 @@ document.getElementById('merchantForm').addEventListener('submit', async functio
             },
             body: JSON.stringify(merchantData)
         });
-        
+
         const data = await response.json();
-        
+
         if (data.success) {
             showToast('Merchant created successfully!', 'success');
             hideCreateMerchantForm();
@@ -1155,7 +1156,7 @@ async function sendNotificationToMerchant(merchantId) {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer admin-token' // Simple admin token for now
             },
-            body: JSON.stringify({ 
+            body: JSON.stringify({
                 message,
                 type: 'general'
             })
