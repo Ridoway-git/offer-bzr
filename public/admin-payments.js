@@ -3,10 +3,10 @@ let payments = [];
 let merchantsWithPaymentStatus = [];
 
 // Load payments when section is shown
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Override showSection to load payments when payments section is shown
     const originalShowSection = window.showSection;
-    window.showSection = function(sectionName) {
+    window.showSection = function (sectionName) {
         originalShowSection(sectionName);
         if (sectionName === 'payments') {
             loadPayments();
@@ -48,7 +48,7 @@ async function loadPayments() {
 // Display payments
 function displayPayments(paymentsList) {
     const paymentsListElement = document.getElementById('paymentsList');
-    
+
     if (paymentsList.length === 0) {
         paymentsListElement.innerHTML = '<div class="empty-state">No payments found</div>';
         return;
@@ -103,10 +103,18 @@ function displayPayments(paymentsList) {
             
             <div class="payment-actions">
                 <button class="btn btn-secondary" onclick="viewPaymentDetails('${payment._id}')">
-                    <i class="fas fa-eye"></i> View Details
+                    <i class="fas fa-eye"></i> Details
                 </button>
+                ${payment.status === 'pending' ? `
+                <button class="btn btn-success" onclick="approvePayment('${payment._id}')" style="margin-left: 5px; background-color: #28a745; color: white;">
+                    <i class="fas fa-check"></i> Approve
+                </button>
+                <button class="btn btn-warning" onclick="rejectPayment('${payment._id}')" style="margin-left: 5px; background-color: #ffc107; color: black;">
+                    <i class="fas fa-times"></i> Reject
+                </button>
+                ` : ''}
                 <button class="btn btn-danger" onclick="deletePayment('${payment._id}')" style="margin-left: 5px;">
-                    <i class="fas fa-trash"></i> Delete
+                    <i class="fas fa-trash"></i>
                 </button>
             </div>
         </div>
@@ -182,7 +190,7 @@ async function viewPaymentDetails(paymentId) {
             showToast('Payment not found. It may have been deleted.', 'error');
             return;
         }
-        
+
         const data = await response.json();
 
         if (data.success) {
@@ -214,10 +222,23 @@ async function viewPaymentDetails(paymentId) {
                             </div>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" onclick="closePaymentDetailsModal(this)" style="margin-top: 1rem;">Close</button>
+                    </div>
+                    <div style="margin-top: 1rem; display: flex; justify-content: space-between;">
+                        <button class="btn btn-secondary" onclick="closePaymentDetailsModal(this)">Close</button>
+                        ${payment.status === 'pending' ? `
+                        <div>
+                            <button class="btn btn-success" onclick="approvePayment('${payment._id}'); closePaymentDetailsModal(this);" style="background-color: #28a745; color: white; margin-right: 10px;">
+                                <i class="fas fa-check"></i> Approve
+                            </button>
+                            <button class="btn btn-warning" onclick="rejectPayment('${payment._id}'); closePaymentDetailsModal(this);" style="background-color: #ffc107; color: black;">
+                                <i class="fas fa-times"></i> Reject
+                            </button>
+                        </div>
+                        ` : ''}
+                    </div>
                 </div>
             `;
-            
+
             const modal = document.createElement('div');
             modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 10000; display: flex; align-items: center; justify-content: center; overflow-y: auto; padding: 20px;';
             modal.innerHTML = details;
@@ -244,7 +265,7 @@ function closePaymentDetailsModal(buttonElement) {
 // Delete payment
 async function deletePayment(paymentId) {
     if (!confirm('Are you sure you want to delete this payment? This action cannot be undone.')) return;
-    
+
     try {
         const response = await fetch(`${API_BASE_URL}/payments/${paymentId}`, {
             method: 'DELETE',
@@ -253,15 +274,15 @@ async function deletePayment(paymentId) {
                 'Content-Type': 'application/json'
             }
         });
-        
+
         if (response.status === 404) {
             showToast('Payment not found. It may have already been deleted.', 'error');
             loadPayments(); // Refresh the list to reflect current state
             return;
         }
-        
+
         const data = await response.json();
-        
+
         if (data.success) {
             showToast('Payment deleted successfully!', 'success');
             loadPayments();
@@ -317,7 +338,7 @@ async function loadMerchantsForFeeForm() {
             const select = document.getElementById('feeMerchantSelect');
             if (select) {  // Check if element exists before modifying
                 select.innerHTML = '<option value="">Select Merchant</option>';
-                
+
                 data.data.forEach(merchant => {
                     const option = document.createElement('option');
                     option.value = merchant._id;
@@ -334,13 +355,13 @@ async function loadMerchantsForFeeForm() {
 // Set access fee form submission
 const accessFeeForm = document.getElementById('accessFeeForm');
 if (accessFeeForm) {  // Only attach event listener if form exists
-    accessFeeForm.addEventListener('submit', async function(e) {
+    accessFeeForm.addEventListener('submit', async function (e) {
         e.preventDefault();
-        
+
         const formData = new FormData(this);
         const merchantId = formData.get('merchantId');
         const accessFee = parseFloat(formData.get('accessFee'));
-    
+
         try {
             const response = await fetch(`${API_BASE_URL}/admin/merchants/${merchantId}/set-access-fee`, {
                 method: 'POST',
@@ -350,9 +371,9 @@ if (accessFeeForm) {  // Only attach event listener if form exists
                 },
                 body: JSON.stringify({ accessFee })
             });
-    
+
             const data = await response.json();
-    
+
             if (data.success) {
                 showToast('Access fee set successfully!', 'success');
                 this.reset();
