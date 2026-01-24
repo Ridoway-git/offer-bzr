@@ -946,7 +946,6 @@ async function searchMerchants() {
             
             <div class="merchant-actions">
 
-                <button class="btn ${merchant.isApproved ? 'btn-warning' : 'btn-success'}" 
                 <button class="btn btn-success" 
                         onclick="toggleMerchantApproval('${merchant._id}', false)" 
                         ${merchant.isApproved ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
