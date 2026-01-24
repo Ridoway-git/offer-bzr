@@ -772,12 +772,12 @@ function displayMerchants() {
             <div class="merchant-actions">
 
                 <button class="btn btn-success" 
-                        onclick="toggleMerchantApproval('${merchant._id}', false)" 
+                        onclick="toggleMerchantApproval('${merchant._id}', 'approve')" 
                         ${merchant.isApproved ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
                     <i class="fas fa-check"></i> Approve
                 </button>
                 <button class="btn btn-danger" 
-                        onclick="toggleMerchantApproval('${merchant._id}', true)" 
+                        onclick="toggleMerchantApproval('${merchant._id}', 'reject')" 
                         ${!merchant.isApproved ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
                     <i class="fas fa-times"></i> Reject
                 </button>
@@ -952,12 +952,12 @@ async function searchMerchants() {
             <div class="merchant-actions">
 
                 <button class="btn btn-success" 
-                        onclick="toggleMerchantApproval('${merchant._id}', false)" 
+                        onclick="toggleMerchantApproval('${merchant._id}', 'approve')" 
                         ${merchant.isApproved ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
                     <i class="fas fa-check"></i> Approve
                 </button>
                 <button class="btn btn-danger" 
-                        onclick="toggleMerchantApproval('${merchant._id}', true)" 
+                        onclick="toggleMerchantApproval('${merchant._id}', 'reject')" 
                         ${!merchant.isApproved ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
                     <i class="fas fa-times"></i> Reject
                 </button>
@@ -972,15 +972,35 @@ async function searchMerchants() {
     `).join('');
 }
 
-async function toggleMerchantApproval(merchantId, currentStatus) {
-    // Convert currentStatus to proper boolean if it's undefined
-    const isCurrentlyApproved = !!currentStatus;
+async function toggleMerchantApproval(merchantId, action) {
+    let targetStatus;
+
+    // Handle both string actions and boolean (legacy/fallback)
+    if (action === 'approve') {
+        targetStatus = true;
+    } else if (action === 'reject') {
+        targetStatus = false;
+    } else if (typeof action === 'boolean') {
+        // Legacy behavior: toggle
+        // If passed 'true' (was approved), we want to reject (false).
+        // If passed 'false' (was not approved), we want to approve (true).
+        targetStatus = !action;
+    } else {
+        console.error('Invalid action for toggleMerchantApproval:', action);
+        return;
+    }
 
     // OPTIMISTIC UPDATE: Update local state immediately
     const merchant = merchants.find(m => m._id === merchantId);
+
+    // If status is already what we want, ignore
+    if (merchant && merchant.isApproved === targetStatus) {
+        return;
+    }
+
     if (merchant) {
-        merchant.isApproved = !isCurrentlyApproved;
-        displayMerchants(); // Re-render immediately to update button color
+        merchant.isApproved = targetStatus;
+        displayMerchants(); // Re-render immediately to update buttons
     }
 
     try {
@@ -995,10 +1015,9 @@ async function toggleMerchantApproval(merchantId, currentStatus) {
         const data = await response.json();
 
         if (response.ok && data.success) {
-            const newStatus = !isCurrentlyApproved;
-            // User requested specific messages
+            // Success
             let msg = '';
-            if (newStatus) {
+            if (targetStatus) {
                 msg = 'Merchant approved successfully!';
             } else {
                 msg = 'Merchant reject successfully!';
@@ -1008,19 +1027,19 @@ async function toggleMerchantApproval(merchantId, currentStatus) {
         } else {
             // Revert on failure
             if (merchant) {
-                merchant.isApproved = isCurrentlyApproved;
+                merchant.isApproved = !targetStatus;
                 displayMerchants();
             }
-            showToast(data.message || `Error ${isCurrentlyApproved ? 'rejecting' : 'approving'} merchant`, 'error');
+            showToast(data.message || `Error ${!targetStatus ? 'rejecting' : 'approving'} merchant`, 'error');
         }
     } catch (error) {
         // Revert on error
         if (merchant) {
-            merchant.isApproved = isCurrentlyApproved;
+            merchant.isApproved = !targetStatus;
             displayMerchants();
         }
         console.error('Error toggling merchant approval:', error);
-        showToast(`Error ${isCurrentlyApproved ? 'rejecting' : 'approving'} merchant`, 'error');
+        showToast(`Error ${!targetStatus ? 'rejecting' : 'approving'} merchant`, 'error');
     }
 }
 
