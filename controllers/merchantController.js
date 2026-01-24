@@ -48,7 +48,7 @@ const getAllMerchants = async (req, res) => {
 const getMerchantById = async (req, res) => {
   try {
     const merchant = await Merchant.findById(req.params.id);
-    
+
     if (!merchant) {
       return res.status(404).json({
         success: false,
@@ -281,7 +281,7 @@ const getMerchantProfile = async (req, res) => {
   try {
     // Get merchant ID from token (you'll need to implement JWT middleware)
     const merchantId = req.user?.id; // Assuming JWT middleware sets req.user
-    
+
     if (!merchantId) {
       return res.status(401).json({
         success: false,
@@ -290,12 +290,30 @@ const getMerchantProfile = async (req, res) => {
     }
 
     const merchant = await Merchant.findById(merchantId);
-    
+
     if (!merchant) {
       return res.status(404).json({
         success: false,
         message: 'Merchant not found'
       });
+    }
+
+    // Auto-expiry check
+    if (merchant.packageStatus === 'active' && merchant.packageEndDate && new Date() > new Date(merchant.packageEndDate)) {
+      merchant.packageStatus = 'expired';
+      merchant.approvalStatus = 'rejected';
+      merchant.isApproved = false;
+      await merchant.save();
+
+      // Send expiry notification
+      const Notification = require('../models/Notification');
+      const notification = new Notification({
+        merchant: merchantId,
+        message: `Your subscription package has expired. Your account is now restricted. Please renew your package to continue.`,
+        type: 'warning',
+        sentBy: 'System'
+      });
+      await notification.save();
     }
 
     // Get merchant's store
@@ -329,7 +347,7 @@ const getMerchantProfile = async (req, res) => {
 const updateMerchantProfile = async (req, res) => {
   try {
     const merchantId = req.user?.id;
-    
+
     if (!merchantId) {
       return res.status(401).json({
         success: false,
@@ -361,7 +379,7 @@ const updateMerchantProfile = async (req, res) => {
 const createMerchantStore = async (req, res) => {
   try {
     const merchantId = req.user?.id;
-    
+
     if (!merchantId) {
       return res.status(401).json({
         success: false,
@@ -401,7 +419,7 @@ const createMerchantStore = async (req, res) => {
 const getMerchantStore = async (req, res) => {
   try {
     const merchantId = req.user?.id;
-    
+
     if (!merchantId) {
       return res.status(401).json({
         success: false,
@@ -410,7 +428,7 @@ const getMerchantStore = async (req, res) => {
     }
 
     const store = await Store.findOne({ merchant: merchantId });
-    
+
     if (!store) {
       return res.status(404).json({
         success: false,
@@ -434,7 +452,7 @@ const getMerchantStore = async (req, res) => {
 const updateMerchantStore = async (req, res) => {
   try {
     const merchantId = req.user?.id;
-    
+
     if (!merchantId) {
       return res.status(401).json({
         success: false,
@@ -473,7 +491,7 @@ const updateMerchantStore = async (req, res) => {
 const getMerchantOffers = async (req, res) => {
   try {
     const merchantId = req.user?.id;
-    
+
     if (!merchantId) {
       return res.status(401).json({
         success: false,
@@ -501,7 +519,7 @@ const getMerchantOffers = async (req, res) => {
 const createMerchantOffer = async (req, res) => {
   try {
     const merchantId = req.user?.id;
-    
+
     if (!merchantId) {
       return res.status(401).json({
         success: false,
@@ -511,7 +529,7 @@ const createMerchantOffer = async (req, res) => {
 
     // Get merchant's store
     const store = await Store.findOne({ merchant: merchantId });
-    
+
     if (!store) {
       return res.status(400).json({
         success: false,
@@ -548,7 +566,7 @@ const updateMerchantOffer = async (req, res) => {
   try {
     const merchantId = req.user?.id;
     const offerId = req.params.id;
-    
+
     if (!merchantId) {
       return res.status(401).json({
         success: false,
@@ -586,7 +604,7 @@ const updateMerchantOffer = async (req, res) => {
 const deleteMerchantOffer = async (req, res) => {
   try {
     const offerId = req.params.id;
-    
+
     // For now, allow deletion without strict authentication
     // In production, you should implement proper merchant authentication
     const offer = await Offer.findByIdAndDelete(offerId);
@@ -614,7 +632,7 @@ const deleteMerchantOffer = async (req, res) => {
 const deleteMerchantStore = async (req, res) => {
   try {
     const merchantId = req.user?.id;
-    
+
     if (!merchantId) {
       return res.status(401).json({
         success: false,
@@ -723,7 +741,7 @@ const sendNotificationToMerchant = async (req, res) => {
 const getMerchantPackage = async (req, res) => {
   try {
     const merchantId = req.user?.id;
-    
+
     if (!merchantId) {
       return res.status(401).json({
         success: false,
@@ -732,7 +750,7 @@ const getMerchantPackage = async (req, res) => {
     }
 
     const merchant = await Merchant.findById(merchantId).populate('package');
-    
+
     if (!merchant) {
       return res.status(404).json({
         success: false,
@@ -762,7 +780,7 @@ const getMerchantPackage = async (req, res) => {
 const getAvailablePackages = async (req, res) => {
   try {
     const packages = await Package.find({ isActive: true }).sort({ durationInMonths: 1 });
-    
+
     res.json({
       success: true,
       data: packages
