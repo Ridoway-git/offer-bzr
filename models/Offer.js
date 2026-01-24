@@ -24,7 +24,7 @@ const offerSchema = new mongoose.Schema({
     type: String,
     trim: true,
     validate: {
-      validator: function(v) {
+      validator: function (v) {
         return !v || /^(\/uploads\/.+|https?:\/\/.+)/.test(v);
       },
       message: 'Image URL must be a valid URL or upload path'
@@ -34,7 +34,7 @@ const offerSchema = new mongoose.Schema({
     type: String,
     trim: true,
     validate: {
-      validator: function(v) {
+      validator: function (v) {
         return !v || /^https?:\/\/.+/.test(v);
       },
       message: 'Product URL must be a valid URL'
@@ -43,8 +43,7 @@ const offerSchema = new mongoose.Schema({
   discount: {
     type: Number,
     required: [true, 'Discount amount is required'],
-    min: [0, 'Discount cannot be negative'],
-    max: [100, 'Discount cannot exceed 100%']
+    min: [0, 'Discount cannot be negative']
   },
   discountType: {
     type: String,
@@ -69,7 +68,7 @@ const offerSchema = new mongoose.Schema({
     type: Date,
     required: [true, 'Expiry date is required'],
     validate: {
-      validator: function(v) {
+      validator: function (v) {
         return v > new Date();
       },
       message: 'Expiry date must be in the future'
@@ -107,7 +106,7 @@ const offerSchema = new mongoose.Schema({
 });
 
 // Update the updatedAt field before saving
-offerSchema.pre('save', function(next) {
+offerSchema.pre('save', function (next) {
   this.updatedAt = Date.now();
   next();
 });
