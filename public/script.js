@@ -971,6 +971,13 @@ async function toggleMerchantApproval(merchantId, currentStatus) {
     // Convert currentStatus to proper boolean if it's undefined
     const isCurrentlyApproved = !!currentStatus;
 
+    // OPTIMISTIC UPDATE: Update local state immediately
+    const merchant = merchants.find(m => m._id === merchantId);
+    if (merchant) {
+        merchant.isApproved = !isCurrentlyApproved;
+        displayMerchants(); // Re-render immediately to update button color
+    }
+
     try {
         const response = await fetch(`${API_BASE_URL}/admin/merchants/${merchantId}/toggle-approval`, {
             method: 'PATCH',
@@ -992,11 +999,21 @@ async function toggleMerchantApproval(merchantId, currentStatus) {
                 msg = 'Merchant reject successfully!';
             }
             showToast(msg, 'success');
-            loadMerchants();
+            setTimeout(loadMerchants, 1000); // Sync with server after delay
         } else {
+            // Revert on failure
+            if (merchant) {
+                merchant.isApproved = isCurrentlyApproved;
+                displayMerchants();
+            }
             showToast(data.message || `Error ${isCurrentlyApproved ? 'rejecting' : 'approving'} merchant`, 'error');
         }
     } catch (error) {
+        // Revert on error
+        if (merchant) {
+            merchant.isApproved = isCurrentlyApproved;
+            displayMerchants();
+        }
         console.error('Error toggling merchant approval:', error);
         showToast(`Error ${isCurrentlyApproved ? 'rejecting' : 'approving'} merchant`, 'error');
     }
