@@ -5,8 +5,8 @@ const Merchant = require('../models/Merchant');
 const Store = require('../models/Store');
 const Offer = require('../models/Offer');
 
-// Load env vars
-dotenv.config({ path: path.join(__dirname, '../config.env') });
+// Load env vars - POINTING TO PRODUCTION ENV
+dotenv.config({ path: path.join(__dirname, '../config.production.env') });
 
 const storesList = [
     { name: 'Daraz', category: 'E-commerce', description: 'Best online shopping experience in Bangladesh.', logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Daraz_Logo.png/800px-Daraz_Logo.png' },
@@ -32,6 +32,7 @@ const getRandomDate = (start, end) => {
 
 const connectDB = async () => {
     try {
+        console.log('Connecting to production database...');
         const conn = await mongoose.connect(process.env.MONGODB_URI);
         console.log(`MongoDB Connected: ${conn.connection.host}`);
     } catch (error) {
@@ -85,7 +86,7 @@ const seedData = async () => {
 
             console.log(`Store processed: ${storeInfo.name} (Logo updated)`);
 
-            // Remove existing offers for this store to ensure only 6 exists
+            // Remove existing offers for this store to ensure only 1 exists
             await Offer.deleteMany({ store: store._id });
             console.log(`Cleared existing offers for ${storeInfo.name}`);
 

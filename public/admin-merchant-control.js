@@ -6,7 +6,7 @@ function updateMerchantCardHTML() {
     // This function will be called to update merchant cards with new buttons
     if (typeof searchMerchants === 'function') {
         const originalSearchMerchants = searchMerchants;
-        searchMerchants = function() {
+        searchMerchants = function () {
             originalSearchMerchants();
             // Add new buttons after the original function runs
             addMerchantControlButtons();
@@ -191,15 +191,10 @@ function createMerchantCardHTML(merchant) {
                 <button class="btn btn-secondary" onclick="editMerchant('${merchant._id}')">
                     <i class="fas fa-edit"></i> Edit
                 </button>
-                <button class="btn ${merchant.isApproved ? 'btn-warning' : 'btn-success'}" 
+                <button class="btn ${merchant.isApproved ? 'btn-danger' : 'btn-success'}" 
                         onclick="toggleMerchantApproval('${merchant._id}', ${merchant.isApproved})">
                     <i class="fas fa-${merchant.isApproved ? 'times' : 'check'}"></i>
-                    ${merchant.isApproved ? 'Disapprove' : 'Approve'}
-                </button>
-                <button class="btn ${merchant.isActive ? 'btn-warning' : 'btn-success'}" 
-                        onclick="toggleMerchantStatus('${merchant._id}', ${merchant.isActive})">
-                    <i class="fas fa-${merchant.isActive ? 'pause' : 'play'}"></i>
-                    ${merchant.isActive ? 'Deactivate' : 'Activate'}
+                    ${merchant.isApproved ? 'Reject' : 'Approve'}
                 </button>
                 <button class="btn btn-primary" onclick="sendNotificationToMerchant('${merchant._id}')">
                     <i class="fas fa-bell"></i> Notify
@@ -213,7 +208,7 @@ function createMerchantCardHTML(merchant) {
 }
 
 // Initialize merchant control system when page loads
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Wait for the page to fully load
     setTimeout(() => {
         if (typeof addMerchantControlButtons === 'function') {
@@ -223,8 +218,44 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Also run when merchants are loaded
-window.addEventListener('merchantsLoaded', function() {
+window.addEventListener('merchantsLoaded', function () {
     if (typeof addMerchantControlButtons === 'function') {
         addMerchantControlButtons();
     }
 });
+
+// Override toggleMerchantApproval with specific messages
+async function toggleMerchantApproval(merchantId, currentStatus) {
+    const isCurrentlyApproved = !!currentStatus;
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/admin/merchants/${merchantId}/toggle-approval`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer admin-token'
+            }
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            const newStatus = !isCurrentlyApproved;
+            // User requested: "merchant reject successfully" vs "approved"
+            let msg = '';
+            if (newStatus) {
+                msg = 'Merchant approved successfully!';
+            } else {
+                msg = 'Merchant reject successfully!';
+            }
+
+            showToast(msg, 'success');
+            loadMerchants();
+        } else {
+            showToast(data.message || `Error ${isCurrentlyApproved ? 'rejecting' : 'approving'} merchant`, 'error');
+        }
+    } catch (error) {
+        console.error('Error toggling merchant approval:', error);
+        showToast(`Error ${isCurrentlyApproved ? 'rejecting' : 'approving'} merchant`, 'error');
+    }
+}
