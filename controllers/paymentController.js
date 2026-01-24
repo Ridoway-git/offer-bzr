@@ -479,9 +479,9 @@ const approvePayment = async (req, res) => {
     // Check if this payment is for a package
     if (payment.package && payment.packageDurationMonths) {
       const Package = require('../models/Package');
-      const package = await Package.findById(payment.package);
+      const pkg = await Package.findById(payment.package);
 
-      if (package) {
+      if (pkg && merchant) {
         // Calculate package start and end dates
         let startDate = new Date();
         let endDate = new Date();
