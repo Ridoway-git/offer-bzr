@@ -47,7 +47,7 @@ async function loadDashboard() {
         const offersData = await offersResponse.json();
         const featuredData = await featuredResponse.json();
 
-        document.getElementById('totalStores').textContent = storesData.pagination?.totalStores || 0;
+
         document.getElementById('totalOffers').textContent = offersData.pagination?.totalOffers || 0;
         document.getElementById('featuredOffers').textContent = featuredData.data?.length || 0;
 
