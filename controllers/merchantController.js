@@ -170,12 +170,10 @@ const toggleMerchantApproval = async (req, res) => {
       });
     }
 
-    // Update both approvalStatus and isApproved
     if (merchant.approvalStatus === 'pending' || merchant.approvalStatus === 'rejected') {
       merchant.approvalStatus = 'approved';
       merchant.isApproved = true;
 
-      // Activate package if exists
       if (merchant.package) {
         const Package = require('../models/Package');
         const pkg = await Package.findById(merchant.package);
@@ -193,8 +191,6 @@ const toggleMerchantApproval = async (req, res) => {
     } else if (merchant.approvalStatus === 'approved') {
       merchant.approvalStatus = 'rejected';
       merchant.isApproved = false;
-      // Optional: deactivate package on reject? 
-      // merchant.packageStatus = 'inactive'; // Keeping simple for now as per request
     }
 
     await merchant.save();
@@ -291,12 +287,9 @@ const approveOffer = async (req, res) => {
   }
 };
 
-// Merchant profile functions
 const getMerchantProfile = async (req, res) => {
   try {
-    // Get merchant ID from token (you'll need to implement JWT middleware)
-    const merchantId = req.user?.id; // Assuming JWT middleware sets req.user
-
+    const merchantId = req.user?.id;
     if (!merchantId) {
       return res.status(401).json({
         success: false,
@@ -399,6 +392,15 @@ const createMerchantStore = async (req, res) => {
       return res.status(401).json({
         success: false,
         message: 'Unauthorized'
+      });
+    }
+
+    // Check if store already exists
+    const existingStore = await Store.findOne({ merchant: merchantId });
+    if (existingStore) {
+      return res.status(400).json({
+        success: false,
+        message: 'Store already exists for this merchant. Please update your existing store.'
       });
     }
 
