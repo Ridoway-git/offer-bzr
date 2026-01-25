@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,9 +8,10 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
+
 <body>
     <div class="container">
-        
+
         <header class="header">
             <h1><i class="fas fa-store"></i> Offer Bazar Admin</h1>
             <nav class="nav">
@@ -25,27 +27,25 @@
                 <button class="nav-btn" onclick="showSection('merchants')">
                     <i class="fas fa-users"></i> Merchants
                 </button>
-                
+
                 <button class="nav-btn" onclick="showSection('payments')">
                     <i class="fas fa-money-bill-wave"></i> Payments
                 </button>
-                
+
                 <button class="nav-btn" onclick="showSection('packages')">
                     <i class="fas fa-box-open"></i> Packages
                 </button>
-                <button class="nav-btn" onclick="showSection('notifications'); setTimeout(() => { if (window.showNotificationSection) window.showNotificationSection(); }, 100);">
+                <button class="nav-btn"
+                    onclick="showSection('notifications'); setTimeout(() => { if (window.showNotificationSection) window.showNotificationSection(); }, 100);">
                     <i class="fas fa-bell"></i> Notifications
                 </button>
             </nav>
         </header>
 
-        
+
         <section id="dashboard" class="section active">
             <div class="dashboard-grid">
-                <div class="card">
-                    <h3><i class="fas fa-store"></i> Total Stores</h3>
-                    <div class="stat-number" id="totalStores">-</div>
-                </div>
+
                 <div class="card">
                     <h3><i class="fas fa-tags"></i> Total Offers</h3>
                     <div class="stat-number" id="totalOffers">-</div>
@@ -61,7 +61,7 @@
             </div>
         </section>
 
-       
+
         <section id="stores" class="section">
             <div class="section-header">
                 <h2><i class="fas fa-store"></i> Store Management</h2>
@@ -76,7 +76,7 @@
                 </div>
             </div>
 
-            
+
             <div id="createStoreForm" class="form-container" style="display: none;">
                 <h3>Create New Store</h3>
                 <form id="storeForm">
@@ -87,15 +87,17 @@
                         </div>
                         <div class="form-group">
                             <label for="storeCategory">Category *</label>
-                            <input type="text" id="storeCategory" name="category" placeholder="e.g., Electronics, Fashion, Food, etc." required>
+                            <input type="text" id="storeCategory" name="category"
+                                placeholder="e.g., Electronics, Fashion, Food, etc." required>
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="storeDescription">Description *</label>
-                        <textarea id="storeDescription" name="description" placeholder="Describe the store..." rows="3" required></textarea>
+                        <textarea id="storeDescription" name="description" placeholder="Describe the store..." rows="3"
+                            required></textarea>
                     </div>
-                    
+
                     <div class="form-row">
                         <div class="form-group">
                             <label for="storeWebsite">Website URL</label>
@@ -106,13 +108,13 @@
                             <input type="email" id="storeEmail" name="contactEmail" placeholder="contact@example.com">
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="storeLogo">Logo URL</label>
                         <input type="url" id="storeLogo" name="logoUrl" placeholder="https://example.com/logo.png">
                         <small>Enter the logo URL for this store</small>
                     </div>
-                    
+
                     <div class="form-group checkbox-group">
                         <label class="checkbox-label">
                             <input type="checkbox" id="storeActive" name="isActive" checked>
@@ -120,7 +122,7 @@
                             Store is active
                         </label>
                     </div>
-                    
+
                     <div class="form-actions">
                         <button type="button" class="btn btn-secondary" onclick="hideCreateStoreForm()">Cancel</button>
                         <button type="submit" class="btn btn-primary">Create Store</button>
@@ -128,13 +130,13 @@
                 </form>
             </div>
 
-            
+
             <div class="stores-list" id="storesList">
                 <div class="loading">Loading stores...</div>
             </div>
         </section>
 
-        
+
         <section id="offers" class="section">
             <div class="section-header">
                 <h2><i class="fas fa-tags"></i> Offer Management</h2>
@@ -149,36 +151,40 @@
                 </div>
             </div>
 
-           
+
             <div id="createOfferForm" class="form-container" style="display: none;">
                 <h3>Create New Offer</h3>
                 <form id="offerForm">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="offerTitle">Title *</label>
-                            <input type="text" id="offerTitle" name="title" placeholder="e.g., Summer Sale 2025" required>
+                            <input type="text" id="offerTitle" name="title" placeholder="e.g., Summer Sale 2025"
+                                required>
                         </div>
                         <div class="form-group">
                             <label for="offerCode">Offer Code *</label>
                             <input type="text" id="offerCode" name="offerCode" placeholder="e.g., SUMMER50" required>
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="offerDescription">Description *</label>
-                        <textarea id="offerDescription" name="description" placeholder="Describe the offer details..." rows="3" required></textarea>
+                        <textarea id="offerDescription" name="description" placeholder="Describe the offer details..."
+                            rows="3" required></textarea>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="offerImage">Offer Image URL</label>
-                        <input type="url" id="offerImage" name="imageUrl" placeholder="https://example.com/offer-image.jpg">
+                        <input type="url" id="offerImage" name="imageUrl"
+                            placeholder="https://example.com/offer-image.jpg">
                         <small>Enter the image URL for this offer</small>
                     </div>
-                    
+
                     <div class="form-row">
                         <div class="form-group">
                             <label for="offerDiscount">Discount *</label>
-                            <input type="number" id="offerDiscount" name="discount" placeholder="50" min="0" max="100" required>
+                            <input type="number" id="offerDiscount" name="discount" placeholder="50" min="0" max="100"
+                                required>
                         </div>
                         <div class="form-group">
                             <label for="offerDiscountType">Discount Type *</label>
@@ -191,7 +197,7 @@
                             </select>
                         </div>
                     </div>
-                    
+
                     <div class="form-row">
                         <div class="form-group">
                             <label for="offerStore">Store *</label>
@@ -201,10 +207,11 @@
                         </div>
                         <div class="form-group">
                             <label for="offerCategory">Category *</label>
-                            <input type="text" id="offerCategory" name="category" placeholder="e.g., Electronics, Fashion, Food, etc." required>
+                            <input type="text" id="offerCategory" name="category"
+                                placeholder="e.g., Electronics, Fashion, Food, etc." required>
                         </div>
                     </div>
-                    
+
                     <div class="form-row">
                         <div class="form-group">
                             <label for="offerExpiry">Expiry Date & Time *</label>
@@ -215,13 +222,14 @@
                             <input type="number" id="offerMinPurchase" name="minPurchaseAmount" placeholder="0" min="0">
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="offerProductUrl">Product URL</label>
-                        <input type="url" id="offerProductUrl" name="productUrl" placeholder="https://store.com/product-page">
+                        <input type="url" id="offerProductUrl" name="productUrl"
+                            placeholder="https://store.com/product-page">
                         <small>Optional: Direct link to the specific product page</small>
                     </div>
-                    
+
                     <div class="form-group checkbox-group">
                         <label class="checkbox-label">
                             <input type="checkbox" id="offerFeatured" name="isFeatured">
@@ -229,7 +237,7 @@
                             Feature this offer (show on homepage)
                         </label>
                     </div>
-                    
+
                     <div class="form-actions">
                         <button type="button" class="btn btn-secondary" onclick="hideCreateOfferForm()">Cancel</button>
                         <button type="submit" class="btn btn-primary">Create Offer</button>
@@ -237,25 +245,26 @@
                 </form>
             </div>
 
-           
+
             <div class="offers-list" id="offersList">
                 <div class="loading">Loading offers...</div>
             </div>
         </section>
 
-       
+
         <section id="merchants" class="section">
             <div class="section-header">
                 <h2><i class="fas fa-users"></i> Merchant Management</h2>
                 <div class="header-actions">
                     <div class="search-box">
-                        <input type="text" id="merchantSearch" placeholder="Search merchants..." onkeyup="searchMerchants()">
+                        <input type="text" id="merchantSearch" placeholder="Search merchants..."
+                            onkeyup="searchMerchants()">
                         <i class="fas fa-search"></i>
                     </div>
                 </div>
             </div>
 
-           
+
             <div id="createMerchantForm" class="form-container" style="display: none;">
                 <div class="form-header">
                     <h3><i class="fas fa-user-plus"></i> Create New Merchant</h3>
@@ -263,7 +272,7 @@
                         <i class="fas fa-times"></i> Cancel
                     </button>
                 </div>
-                
+
                 <form id="merchantForm">
                     <div class="form-row">
                         <div class="form-group">
@@ -272,10 +281,11 @@
                         </div>
                         <div class="form-group">
                             <label for="merchantEmail">Email</label>
-                            <input type="email" id="merchantEmail" name="email" placeholder="merchant@example.com" required>
+                            <input type="email" id="merchantEmail" name="email" placeholder="merchant@example.com"
+                                required>
                         </div>
                     </div>
-                    
+
                     <div class="form-row">
                         <div class="form-group">
                             <label for="merchantPhone">Phone</label>
@@ -283,10 +293,11 @@
                         </div>
                         <div class="form-group">
                             <label for="merchantBusinessName">Business Name</label>
-                            <input type="text" id="merchantBusinessName" name="businessName" placeholder="Business name" required>
+                            <input type="text" id="merchantBusinessName" name="businessName" placeholder="Business name"
+                                required>
                         </div>
                     </div>
-                    
+
                     <div class="form-row">
                         <div class="form-group">
                             <label for="merchantBusinessType">Business Type</label>
@@ -304,20 +315,22 @@
                             <input type="url" id="merchantWebsite" name="website" placeholder="https://example.com">
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="merchantAddress">Address</label>
-                        <textarea id="merchantAddress" name="address" rows="3" placeholder="Enter business address" required></textarea>
+                        <textarea id="merchantAddress" name="address" rows="3" placeholder="Enter business address"
+                            required></textarea>
                     </div>
-                    
+
                     <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="hideCreateMerchantForm()">Cancel</button>
+                        <button type="button" class="btn btn-secondary"
+                            onclick="hideCreateMerchantForm()">Cancel</button>
                         <button type="submit" class="btn btn-primary">Create Merchant</button>
                     </div>
                 </form>
             </div>
 
-            
+
             <div class="merchants-list" id="merchantsList">
                 <div class="loading">Loading merchants...</div>
             </div>
@@ -325,7 +338,7 @@
 
 
 
-       
+
         <section id="packages" class="section">
             <div class="section-header">
                 <h2><i class="fas fa-box-open"></i> Package Management</h2>
@@ -336,31 +349,35 @@
                 </div>
             </div>
 
-            
+
             <div id="createPackageForm" class="form-container" style="display: none;">
                 <h3>Create New Package</h3>
                 <form id="packageForm">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="packageName">Package Name *</label>
-                            <input type="text" id="packageName" name="name" placeholder="e.g., Monthly Package" required>
+                            <input type="text" id="packageName" name="name" placeholder="e.g., Monthly Package"
+                                required>
                         </div>
                         <div class="form-group">
                             <label for="packageDuration">Duration (Months) *</label>
-                            <input type="number" id="packageDuration" name="durationInMonths" placeholder="e.g., 1" min="1" required>
+                            <input type="number" id="packageDuration" name="durationInMonths" placeholder="e.g., 1"
+                                min="1" required>
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="packagePrice">Price (BDT) *</label>
-                        <input type="number" id="packagePrice" name="price" placeholder="e.g., 1000" min="0" step="0.01" required>
+                        <input type="number" id="packagePrice" name="price" placeholder="e.g., 1000" min="0" step="0.01"
+                            required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="packageDescription">Description</label>
-                        <textarea id="packageDescription" name="description" placeholder="Describe the package..." rows="3"></textarea>
+                        <textarea id="packageDescription" name="description" placeholder="Describe the package..."
+                            rows="3"></textarea>
                     </div>
-                    
+
                     <div class="form-group checkbox-group">
                         <label class="checkbox-label">
                             <input type="checkbox" id="packageActive" name="isActive" checked>
@@ -368,80 +385,86 @@
                             Package is active
                         </label>
                     </div>
-                    
+
                     <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="hideCreatePackageForm()">Cancel</button>
+                        <button type="button" class="btn btn-secondary"
+                            onclick="hideCreatePackageForm()">Cancel</button>
                         <button type="submit" class="btn btn-primary">Create Package</button>
                     </div>
                 </form>
             </div>
 
-           
+
             <div class="packages-list" id="packagesList">
                 <div class="loading">Loading packages...</div>
             </div>
         </section>
 
-       
-       <section id="packages" class="section">
-           <div class="section-header">
-               <h2><i class="fas fa-box-open"></i> Package Management</h2>
-               <div class="header-actions">
-                   <button class="btn btn-primary" onclick="showCreatePackageForm()">
-                       <i class="fas fa-plus"></i> Create New Package
-                   </button>
-               </div>
-           </div>
-       
-           
-           <div id="createPackageForm" class="form-container" style="display: none;">
-               <h3>Create New Package</h3>
-               <form id="packageForm">
-                   <div class="form-row">
-                       <div class="form-group">
-                           <label for="packageName">Package Name *</label>
-                           <input type="text" id="packageName" name="name" placeholder="e.g., Monthly Package" required>
-                       </div>
-                       <div class="form-group">
-                           <label for="packageDuration">Duration (Months) *</label>
-                           <input type="number" id="packageDuration" name="durationInMonths" placeholder="e.g., 1" min="1" required>
-                       </div>
-                   </div>
-                           
-                   <div class="form-group">
-                       <label for="packagePrice">Price (BDT) *</label>
-                       <input type="number" id="packagePrice" name="price" placeholder="e.g., 1000" min="0" step="0.01" required>
-                   </div>
-                           
-                   <div class="form-group">
-                       <label for="packageDescription">Description</label>
-                       <textarea id="packageDescription" name="description" placeholder="Describe the package..." rows="3"></textarea>
-                   </div>
-                           
-                   <div class="form-group checkbox-group">
-                       <label class="checkbox-label">
-                           <input type="checkbox" id="packageActive" name="isActive" checked>
-                           <span class="checkmark"></span>
-                           Package is active
-                       </label>
-                   </div>
-                           
-                   <div class="form-actions">
-                       <button type="button" class="btn btn-secondary" onclick="hideCreatePackageForm()">Cancel</button>
-                       <button type="submit" class="btn btn-primary">Create Package</button>
-                   </div>
-               </form>
-           </div>
-       
-           <div class="packages-list" id="packagesList">
-               <div class="loading">Loading packages...</div>
-           </div>
-       </section>
-       
-       <section id="notifications" class="section">
+
+        <section id="packages" class="section">
+            <div class="section-header">
+                <h2><i class="fas fa-box-open"></i> Package Management</h2>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="showCreatePackageForm()">
+                        <i class="fas fa-plus"></i> Create New Package
+                    </button>
+                </div>
+            </div>
+
+
+            <div id="createPackageForm" class="form-container" style="display: none;">
+                <h3>Create New Package</h3>
+                <form id="packageForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="packageName">Package Name *</label>
+                            <input type="text" id="packageName" name="name" placeholder="e.g., Monthly Package"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label for="packageDuration">Duration (Months) *</label>
+                            <input type="number" id="packageDuration" name="durationInMonths" placeholder="e.g., 1"
+                                min="1" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="packagePrice">Price (BDT) *</label>
+                        <input type="number" id="packagePrice" name="price" placeholder="e.g., 1000" min="0" step="0.01"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="packageDescription">Description</label>
+                        <textarea id="packageDescription" name="description" placeholder="Describe the package..."
+                            rows="3"></textarea>
+                    </div>
+
+                    <div class="form-group checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="packageActive" name="isActive" checked>
+                            <span class="checkmark"></span>
+                            Package is active
+                        </label>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary"
+                            onclick="hideCreatePackageForm()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Create Package</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="packages-list" id="packagesList">
+                <div class="loading">Loading packages...</div>
+            </div>
+        </section>
+
+        <section id="notifications" class="section">
             <div class="section-header">
                 <h2><i class="fas fa-bell"></i> Send Notifications</h2>
-                
+
             </div>
 
             <div class="form-container">
@@ -449,14 +472,16 @@
                 <form id="notificationForm">
                     <div class="form-group">
                         <label for="notificationTitle">Title *</label>
-                        <input type="text" id="notificationTitle" name="title" placeholder="e.g., New Offers Available!" required>
+                        <input type="text" id="notificationTitle" name="title" placeholder="e.g., New Offers Available!"
+                            required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="notificationMessage">Message *</label>
-                        <textarea id="notificationMessage" name="message" placeholder="Enter notification message..." rows="4" required></textarea>
+                        <textarea id="notificationMessage" name="message" placeholder="Enter notification message..."
+                            rows="4" required></textarea>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="notificationType">Type *</label>
                         <select id="notificationType" name="type" required>
@@ -466,7 +491,7 @@
                             <option value="error">Error</option>
                         </select>
                     </div>
-                    
+
                     <div class="form-actions">
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-paper-plane"></i> Send Notification
@@ -475,9 +500,9 @@
                 </form>
             </div>
 
-           
-            
-            
+
+
+
 
         </section>
 
@@ -486,7 +511,8 @@
                 <h2><i class="fas fa-money-bill-wave"></i> Payment Management</h2>
                 <div class="header-actions">
                     <div class="search-box">
-                        <input type="text" id="paymentSearch" placeholder="Search payments..." onkeyup="searchPayments()">
+                        <input type="text" id="paymentSearch" placeholder="Search payments..."
+                            onkeyup="searchPayments()">
                         <i class="fas fa-search"></i>
                     </div>
                 </div>
@@ -520,7 +546,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        window.sendNotificationToAll = async function(title, message, type) {
+        window.sendNotificationToAll = async function (title, message, type) {
             try {
                 const notificationsRef = collection(db, 'notifications');
                 const notificationData = {
@@ -540,12 +566,12 @@
             }
         };
 
-        window.loadRecentNotifications = async function() {
+        window.loadRecentNotifications = async function () {
             try {
                 const notificationsRef = collection(db, 'notifications');
                 const q = query(notificationsRef, orderBy('createdAt', 'desc'), limit(10));
                 const querySnapshot = await getDocs(q);
-                
+
                 const notifications = [];
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
@@ -557,7 +583,7 @@
                         createdAt: data.createdAt?.toDate?.() || new Date()
                     });
                 });
-                
+
                 return notifications;
             } catch (error) {
                 console.error('Error loading notifications:', error);
@@ -570,25 +596,25 @@
     <script src="admin-notifications.js"></script>
     <script src="admin-payments.js"></script>
     <script src="admin-packages.js"></script>
-    
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             if (window.location.pathname === '/admin-login.html') {
-                return; 
+                return;
             }
-            
+
             if (localStorage.getItem('adminLoggedIn') !== 'true') {
                 window.location.href = '/admin-login.html';
             }
         });
-        
+
         function adminLogout() {
             localStorage.removeItem('adminLoggedIn');
             localStorage.removeItem('adminEmail');
             window.location.href = '/admin-login.html';
         }
-        
-        document.addEventListener('DOMContentLoaded', function() {
+
+        document.addEventListener('DOMContentLoaded', function () {
             if (window.location.pathname !== '/admin-login.html') {
                 const header = document.querySelector('.header');
                 if (header) {
@@ -597,7 +623,7 @@
                     logoutBtn.className = 'btn btn-danger';
                     logoutBtn.style.marginLeft = 'auto';
                     logoutBtn.onclick = adminLogout;
-                    
+
                     const nav = header.querySelector('.nav');
                     if (nav) {
                         nav.appendChild(logoutBtn);
@@ -607,4 +633,5 @@
         });
     </script>
 </body>
+
 </html>
