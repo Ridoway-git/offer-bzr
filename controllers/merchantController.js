@@ -395,15 +395,6 @@ const createMerchantStore = async (req, res) => {
       });
     }
 
-    // Check if store already exists
-    const existingStore = await Store.findOne({ merchant: merchantId });
-    if (existingStore) {
-      return res.status(400).json({
-        success: false,
-        message: 'Store already exists for this merchant. Please update your existing store.'
-      });
-    }
-
     console.log('Store creation request body:', req.body);
     console.log('Merchant ID:', merchantId);
 
