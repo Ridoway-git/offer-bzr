@@ -287,8 +287,8 @@ function displayOffers(offersList) {
                 </div>
                 ${offer.minPurchaseAmount > 0 ? `
                     <div class="detail-item">
-                        <i class="fas fa-dollar-sign"></i>
-                        Min Purchase: $${offer.minPurchaseAmount}
+                        <span style="font-weight: bold; margin-right: 5px;">৳</span>
+                        Min Purchase: ৳${offer.minPurchaseAmount}
                     </div>
                 ` : ''}
             </div>
@@ -602,7 +602,11 @@ function editOffer(offerId) {
     document.querySelector('#createOfferForm button[type="submit"]').textContent = 'Update Offer';
 
     // Store the offer ID for update
+    // Store the offer ID for update
     document.getElementById('offerForm').dataset.editId = offerId;
+
+    // Auto scroll to the form
+    document.getElementById('createOfferForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 // Search Functions
