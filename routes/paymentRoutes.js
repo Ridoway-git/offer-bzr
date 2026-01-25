@@ -14,10 +14,7 @@ const {
   addCommission,
   getPaymentById,
   deletePayment,
-  sslSuccess,
-  sslFail,
-  sslCancel,
-  sslIpn
+
 } = require('../controllers/paymentController');
 
 const router = express.Router();
@@ -56,11 +53,7 @@ if (!fs.existsSync(paymentProofsDir)) {
   fs.mkdirSync(paymentProofsDir, { recursive: true });
 }
 
-// SSLCommerz Routes
-router.post('/ssl-success', sslSuccess);
-router.post('/ssl-fail', sslFail);
-router.post('/ssl-cancel', sslCancel);
-router.post('/ssl-ipn', sslIpn);
+
 
 
 

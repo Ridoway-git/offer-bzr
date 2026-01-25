@@ -1,14 +1,7 @@
 const Payment = require('../models/Payment');
 const Commission = require('../models/Commission');
 const Merchant = require('../models/Merchant');
-const SSLCommerz = require('sslcommerz-nodejs');
 
-// SSLCommerz configuration
-const config = {
-  isSandboxMode: process.env.IS_LIVE !== 'true',
-  store_id: process.env.STORE_ID || 'testbox',
-  store_passwd: process.env.STORE_PASSWORD || 'qwerty',
-};
 
 
 // Create a new payment
@@ -68,97 +61,7 @@ const createPayment = async (req, res) => {
       await commission.save();
     }
 
-    // Handle SSLCommerz Payment
-    if (paymentMethod === 'sslcommerz') {
-      const tran_id = transactionId || `TXN-${Date.now()}`;
 
-      const sslcommerz = new SSLCommerz(config);
-
-      const postData = {
-        total_amount: parseFloat(amount).toFixed(2),
-        currency: 'BDT',
-        tran_id: tran_id,
-        success_url: `${process.env.API_URL || 'http://localhost:5000'}/api/payments/ssl-success`,
-        fail_url: `${process.env.API_URL || 'http://localhost:5000'}/api/payments/ssl-fail`,
-        cancel_url: `${process.env.API_URL || 'http://localhost:5000'}/api/payments/ssl-cancel`,
-        ipn_url: `${process.env.API_URL || 'http://localhost:5000'}/api/payments/ssl-ipn`,
-        shipping_method: 'NO',
-        product_name: 'Merchant Package',
-        product_category: 'Service',
-        product_profile: 'general',
-        cus_name: merchant.name || 'Merchant',
-        cus_email: merchant.email || 'merchant@example.com',
-        cus_add1: merchant.address || 'Dhaka',
-        cus_city: 'Dhaka',
-        cus_state: 'Dhaka',
-        cus_postcode: '1000',
-        cus_country: 'Bangladesh',
-        cus_phone: merchant?.phone || '01711111111',
-        ship_name: merchant?.name || 'Merchant',
-        ship_add1: merchant?.address || 'Dhaka',
-        ship_city: 'Dhaka',
-        ship_state: 'Dhaka',
-        ship_postcode: 1000,
-        ship_country: 'Bangladesh',
-        value_a: merchantId ? merchantId.toString() : '',
-        value_b: packageId ? packageId.toString() : '',
-        value_c: packageDurationMonths ? packageDurationMonths.toString() : '',
-        value_d: commissionId ? commissionId.toString() : (commission._id ? commission._id.toString() : '')
-      };
-
-      console.log('Environment Debug:', {
-        STORE_ID: process.env.STORE_ID ? 'Set' : 'Missing',
-        STORE_PASSWORD: process.env.STORE_PASSWORD ? 'Set' : 'Missing',
-        IS_LIVE: process.env.IS_LIVE,
-        API_URL: process.env.API_URL
-      });
-
-      try {
-        console.log('Initiating SSLCommerz with:', { ...postData, store_passwd: '***' });
-        const data = await sslcommerz.init_transaction(postData);
-        console.log('SSLCommerz Response:', data);
-
-        if (data?.GatewayPageURL) {
-          const paymentData = {
-            merchant: merchantId,
-            amount: parseFloat(amount),
-            paymentMethod,
-            transactionId: tran_id,
-            commissionId: commissionId || commission._id,
-            status: 'pending'
-          };
-
-          if (packageId) {
-            paymentData.package = packageId;
-            paymentData.packageDurationMonths = parseInt(packageDurationMonths);
-          }
-
-          const payment = new Payment(paymentData);
-          await payment.save();
-
-          return res.status(200).json({
-            success: true,
-            gatewayUrl: data.GatewayPageURL,
-            paymentId: payment._id
-          });
-        } else {
-          console.error('SSLCommerz initialization failed. Response:', data);
-          return res.status(400).json({
-            success: false,
-            message: 'SSLCommerz Session Failed',
-            details: data
-          });
-        }
-      } catch (error) {
-        console.error('SSLCommerz Init Exception:', error);
-        return res.status(500).json({
-          success: false,
-          message: 'SSLCommerz Init Error',
-          error: error.message,
-          stack: error.stack
-        });
-      }
-    }
 
 
 
@@ -213,83 +116,7 @@ const createPayment = async (req, res) => {
   }
 };
 
-// SSLCommerz Success Handler
-const sslSuccess = async (req, res) => {
-  try {
-    const { val_id, value_a, value_b, value_c, value_d, tran_id } = req.body;
 
-    const sslcommerz = new SSLCommerz(config);
-    const validation = await sslcommerz.validate_transaction_order(val_id);
-
-    if (validation && (validation.status === 'VALID' || validation.status === 'VALIDATED')) {
-      const payment = await Payment.findOne({ transactionId: tran_id });
-
-      if (payment) {
-        payment.status = 'approved';
-        payment.approvedAt = new Date();
-        payment.adminNotes = 'Auto-approved via SSLCommerz';
-        await payment.save();
-
-        if (payment.commissionId) {
-          const commission = await Commission.findById(payment.commissionId);
-          if (commission) {
-            commission.paidCommission += payment.amount;
-            commission.pendingCommission = Math.max(0, commission.totalCommission - commission.paidCommission);
-            await commission.save();
-          }
-        }
-
-        const merchantId = value_a;
-        const merchant = await Merchant.findById(merchantId);
-
-        if (merchant && payment.amount >= (merchant.accessFee || 0) && !merchant.accessFeePaid) {
-          merchant.accessFeePaid = true;
-          merchant.accessFeePaymentDate = new Date();
-          merchant.accessFeePaymentId = payment._id;
-          await merchant.save();
-        }
-
-        if (value_b && merchant) {
-          let startDate = new Date();
-          let endDate = new Date();
-
-          // Check if merchant has an active subscription to extend
-          if (merchant.packageStatus === 'active' && merchant.packageEndDate && new Date(merchant.packageEndDate) > new Date()) {
-            startDate = merchant.packageStartDate; // Keep original start date
-            endDate = new Date(merchant.packageEndDate); // Start calculation from current expiry
-          }
-
-          endDate.setMonth(endDate.getMonth() + parseInt(value_c || 1));
-
-          merchant.package = value_b;
-          merchant.packageStartDate = startDate;
-          merchant.packageEndDate = endDate;
-          merchant.packageStatus = 'active';
-          await merchant.save();
-        }
-      }
-
-      return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/merchant/dashboard?payment=success`);
-    } else {
-      return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/merchant/dashboard?payment=fail`);
-    }
-  } catch (error) {
-    console.error('SSL Success Error', error);
-    return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/merchant/dashboard?payment=error`);
-  }
-};
-
-const sslFail = async (req, res) => {
-  return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/merchant/dashboard?payment=fail`);
-};
-
-const sslCancel = async (req, res) => {
-  return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/merchant/dashboard?payment=cancel`);
-};
-
-const sslIpn = async (req, res) => {
-  return res.status(200).send("IPN");
-};
 
 
 
@@ -688,9 +515,6 @@ module.exports = {
   addCommission,
   getPaymentById,
   deletePayment,
-  sslSuccess,
-  sslFail,
-  sslCancel,
-  sslIpn
+
 };
 
