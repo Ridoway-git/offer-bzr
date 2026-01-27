@@ -16,6 +16,11 @@ const userSchema = new mongoose.Schema({
     unique: true,
     sparse: true
   },
+  firebaseUid: {
+    type: String,
+    unique: true,
+    sparse: true
+  },
   password: {
     type: String,
     minlength: [6, 'Password must be at least 6 characters'],

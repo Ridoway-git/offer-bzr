@@ -24,6 +24,65 @@ router.get('/me', authMiddleware, async (req, res) => {
 const crypto = require('crypto');
 const sendEmail = require('../utils/sendEmail');
 
+// Sync Firebase User with Backend (Create/Update + Generate JWT)
+router.post('/sync', async (req, res) => {
+  try {
+    const { uid, email, displayName, photoURL } = req.body;
+
+    // Check if user exists by firebaseUid OR email
+    let user = await User.findOne({
+      $or: [{ firebaseUid: uid }, { email: email }]
+    });
+
+    if (!user) {
+      // Create new user
+      user = new User({
+        firebaseUid: uid,
+        email,
+        username: displayName || email.split('@')[0], // Fallback username
+        displayName,
+        photoURL,
+        isVerified: false // Will be updated by frontend flow or future logic
+      });
+      await user.save();
+    } else {
+      // Update existing user with firebaseUid if missing
+      if (!user.firebaseUid) {
+        user.firebaseUid = uid;
+        await user.save();
+      }
+    }
+
+    // Generate Token
+    const token = jwt.sign(
+      { id: user._id, email: user.email, role: 'user' },
+      process.env.JWT_SECRET || 'your-secret-key',
+      { expiresIn: '7d' }
+    );
+
+    res.json({
+      success: true,
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        role: 'user'
+      }
+    });
+
+  } catch (error) {
+    console.error('Sync error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Sync failed',
+      error: error.message
+    });
+  }
+});
+
 // Test Email Endpoint
 router.get('/test-email', async (req, res) => {
   try {
