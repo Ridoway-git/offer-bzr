@@ -2,7 +2,26 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const Merchant = require('../models/Merchant');
 const User = require('../models/User');
+const authMiddleware = require('../middleware/auth');
 const router = express.Router();
+
+// Get Current User (Me)
+router.get('/me', authMiddleware, async (req, res) => {
+  try {
+    // req.user is populated by authMiddleware
+    res.json({
+      success: true,
+      user: req.user
+    });
+  } catch (error) {
+    console.error('Get me error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching user profile',
+      error: error.message
+    });
+  }
+});
 
 // User Signup
 router.post('/signup', async (req, res) => {
