@@ -223,11 +223,26 @@ router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide email and password'
+      });
+    }
+
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
       return res.status(401).json({
         success: false,
         message: 'Invalid credentials'
+      });
+    }
+
+    // Check if user has a password (might be Google Auth user)
+    if (!user.password) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid credentials. Try signing in with Google.'
       });
     }
 
