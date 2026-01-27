@@ -133,13 +133,19 @@ router.post('/signup', async (req, res) => {
         }
       });
     } catch (err) {
-      console.error('Email send error:', err);
-      // Delete the user if email fails, so they can try again
-      await User.findByIdAndDelete(user._id);
+      console.error('Email send error (Non-fatal):', err);
+      // Do not delete user, allow them to login anyway
+      // await User.findByIdAndDelete(user._id);
 
-      return res.status(500).json({
-        success: false,
-        message: 'Email could not be sent. Please check your email configuration or try again.'
+      // Return success but with a warning or just success since we disabled verification
+      return res.status(201).json({
+        success: true,
+        message: 'Account created successfully. You can now login.',
+        user: {
+          id: user._id,
+          username: user.username,
+          email: user.email
+        }
       });
     }
 
@@ -174,12 +180,15 @@ router.post('/login', async (req, res) => {
       });
     }
 
+    // Check if verified - TEMPORARILY DISABLED for ease of access
+    /* 
     if (!user.isVerified) {
       return res.status(401).json({
         success: false,
         message: 'Please verify your email to log in.'
       });
     }
+    */
 
     const token = jwt.sign(
       { id: user._id, email: user.email, role: 'user' },
