@@ -3,9 +3,9 @@ const nodemailer = require('nodemailer');
 const sendEmail = async (options) => {
     // Create transporter
     const transporter = nodemailer.createTransport({
-        // You can use a service like Gmail, SendGrid, etc.
-        // Ideally these should be in process.env
-        service: process.env.EMAIL_SERVICE || 'Gmail', // or host/port
+        host: process.env.SMTP_HOST || 'smtp.gmail.com',
+        port: process.env.SMTP_PORT || 465,
+        secure: true, // true for 465, false for other ports
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS
@@ -21,7 +21,14 @@ const sendEmail = async (options) => {
     };
 
     // Send email
-    await transporter.sendMail(mailOptions);
+    console.log(`Attempting to send email to ${options.email}...`);
+    try {
+        const info = await transporter.sendMail(mailOptions);
+        console.log('Email sent: ' + info.response);
+    } catch (error) {
+        console.error('Error in sendMail:', error);
+        throw error; // Re-throw to be handled by the caller
+    }
 };
 
 module.exports = sendEmail;
