@@ -23,6 +23,48 @@ router.get('/me', authMiddleware, async (req, res) => {
   }
 });
 
+const crypto = require('crypto');
+const sendEmail = require('../utils/sendEmail');
+
+// Verify Email
+router.get('/verify-email/:token', async (req, res) => {
+  try {
+    const verificationToken = crypto
+      .createHash('sha256')
+      .update(req.params.token)
+      .digest('hex');
+
+    const user = await User.findOne({
+      verificationToken,
+      verificationTokenExpire: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid or expired verification token'
+      });
+    }
+
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    user.verificationTokenExpire = undefined;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Email verified successfully. You can now login.'
+    });
+  } catch (error) {
+    console.error('Verification error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Email verification failed',
+      error: error.message
+    });
+  }
+});
+
 // User Signup
 router.post('/signup', async (req, res) => {
   try {
@@ -43,28 +85,51 @@ router.post('/signup', async (req, res) => {
       username,
       email,
       password,
-      displayName: username // Default display name
+      displayName: username
     });
 
+    // Get verification token
+    const verificationToken = user.getVerificationToken();
     await user.save();
 
-    const token = jwt.sign(
-      { id: user._id, email: user.email, role: 'user' },
-      process.env.JWT_SECRET || 'your-secret-key',
-      { expiresIn: '7d' }
-    );
+    // Create verification url
+    const verifyUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-email?token=${verificationToken}`;
 
-    res.status(201).json({
-      success: true,
-      message: 'User created successfully',
-      token,
-      user: {
-        id: user._id,
-        username: user.username,
+    // Create message
+    const message = `
+      <h1>Email Verification</h1>
+      <p>Please verify your email address to log in to Offer Bazar.</p>
+      <a href="${verifyUrl}" clicktracking=off>${verifyUrl}</a>
+    `;
+
+    try {
+      await sendEmail({
         email: user.email,
-        displayName: user.displayName
-      }
-    });
+        subject: 'Email Verification - Offer Bazar',
+        message
+      });
+
+      res.status(201).json({
+        success: true,
+        message: 'Account created. Please check your email to verify your account.',
+        user: {
+          id: user._id,
+          username: user.username,
+          email: user.email
+        }
+      });
+    } catch (err) {
+      console.error('Email send error:', err);
+      user.verificationToken = undefined;
+      user.verificationTokenExpire = undefined;
+      await user.save({ validateBeforeSave: false });
+
+      return res.status(500).json({
+        success: false,
+        message: 'Email could not be sent. Please try again later.'
+      });
+    }
+
   } catch (error) {
     console.error('Signup error:', error);
     res.status(500).json({
@@ -95,6 +160,14 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({
         success: false,
         message: 'Invalid credentials'
+      });
+    }
+
+    // Check if verified
+    if (!user.isVerified) {
+      return res.status(401).json({
+        success: false,
+        message: 'Please verify your email to log in.'
       });
     }
 
