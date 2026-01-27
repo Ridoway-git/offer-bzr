@@ -120,13 +120,12 @@ router.post('/signup', async (req, res) => {
       });
     } catch (err) {
       console.error('Email send error:', err);
-      user.verificationToken = undefined;
-      user.verificationTokenExpire = undefined;
-      await user.save({ validateBeforeSave: false });
+      // Delete the user if email fails, so they can try again
+      await User.findByIdAndDelete(user._id);
 
       return res.status(500).json({
         success: false,
-        message: 'Email could not be sent. Please try again later.'
+        message: 'Email could not be sent. Please check your email configuration or try again.'
       });
     }
 
