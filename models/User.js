@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+const bcrypt = require('bcryptjs');
+
 const userSchema = new mongoose.Schema({
   email: {
     type: String,
@@ -8,9 +10,19 @@ const userSchema = new mongoose.Schema({
     lowercase: true,
     trim: true
   },
+  username: {
+    type: String,
+    trim: true,
+    unique: true,
+    sparse: true
+  },
+  password: {
+    type: String,
+    minlength: [6, 'Password must be at least 6 characters'],
+    select: false
+  },
   displayName: {
     type: String,
-    required: [true, 'Display name is required'],
     trim: true,
     maxlength: [100, 'Display name cannot exceed 100 characters']
   },
@@ -32,10 +44,23 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-userSchema.pre('save', function(next) {
+userSchema.pre('save', async function (next) {
   this.updatedAt = Date.now();
-  next();
+
+  if (!this.isModified('password')) return next();
+
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (error) {
+    next(error);
+  }
 });
+
+userSchema.methods.comparePassword = async function (candidatePassword) {
+  return await bcrypt.compare(candidatePassword, this.password);
+};
 
 userSchema.index({ email: 1 });
 userSchema.index({ favorites: 1 });
