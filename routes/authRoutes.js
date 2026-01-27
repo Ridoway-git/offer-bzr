@@ -5,10 +5,8 @@ const User = require('../models/User');
 const authMiddleware = require('../middleware/auth');
 const router = express.Router();
 
-// Get Current User (Me)
 router.get('/me', authMiddleware, async (req, res) => {
   try {
-    // req.user is populated by authMiddleware
     res.json({
       success: true,
       user: req.user
@@ -26,7 +24,26 @@ router.get('/me', authMiddleware, async (req, res) => {
 const crypto = require('crypto');
 const sendEmail = require('../utils/sendEmail');
 
-// Verify Email
+// Test Email Endpoint
+router.get('/test-email', async (req, res) => {
+  try {
+    await sendEmail({
+      email: process.env.EMAIL_USER, // Send to self
+      subject: 'Test Email from Offer Bazar',
+      message: '<h1>It works!</h1><p>Email configuration is correct.</p>'
+    });
+    res.json({ success: true, message: 'Email sent successfully' });
+  } catch (error) {
+    console.error('Test email failed:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Email failed',
+      error: error.message,
+      stack: error.stack
+    });
+  }
+});
+
 router.get('/verify-email/:token', async (req, res) => {
   try {
     const verificationToken = crypto
@@ -88,14 +105,11 @@ router.post('/signup', async (req, res) => {
       displayName: username
     });
 
-    // Get verification token
     const verificationToken = user.getVerificationToken();
     await user.save();
 
-    // Create verification url
     const verifyUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-email?token=${verificationToken}`;
 
-    // Create message
     const message = `
       <h1>Email Verification</h1>
       <p>Please verify your email address to log in to Offer Bazar.</p>
@@ -139,12 +153,11 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-// User Login
+
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Check if user exists
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
       return res.status(401).json({
@@ -153,7 +166,6 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    // Check password
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       return res.status(401).json({
@@ -162,7 +174,6 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    // Check if verified
     if (!user.isVerified) {
       return res.status(401).json({
         success: false,
